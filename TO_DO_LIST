@@ -1,0 +1,13 @@
+
+
+###############################################################
+
+Makefile:
+
+
+
+foo : foo.o 					#Per creare foo ho bisogno di foo.o |
+	gcc -o foo foo.o 			#se ho foo.o lo compilo con questo comando
+foo.o : foo.c foo.h 				#se non ho foo.o aggiornato ho bisogno di questi file per crearlo
+	gcc -c foo.c 				#questo è il procedimento per compilare foo.o
+	
