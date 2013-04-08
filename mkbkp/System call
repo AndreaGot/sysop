@@ -1,7 +1,10 @@
 SYSTEM CALL DA UTILIZZARE
 
 mkdir()
+
+opendir()
 readdir()
+closedir()
 
 
 open()
