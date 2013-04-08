@@ -8,4 +8,6 @@ open()
 close()
 write()
 
+MODIFICARE COMANDO TOP (ha molte cose che ci possono servire (refresh, elenco.. bisogna solo capire cosa può andare e cosa no)
+
 http://linux.die.net/man/2/syscalls
