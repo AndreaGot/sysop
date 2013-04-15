@@ -30,7 +30,6 @@ while ( (i = getopt(argc, argv, "abcde")) != -1)
 				break;
 			case '?':   /* unrecognized options */
 				printf("Unrecognized options -%c\n",optopt);
-				usage();
 			default:    /* should not reached */
 				usage();
 		}
