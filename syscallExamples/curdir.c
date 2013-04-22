@@ -12,6 +12,8 @@ main()
 		if (getcwd(cwd, sizeof(cwd)) == NULL)
 			perror("getcwd() error");
 		else
+		{
 			printf("current working directory is: %s\n", cwd);
+			
 	}
 }
