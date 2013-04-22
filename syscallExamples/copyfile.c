@@ -1,7 +1,7 @@
  /*
     ============================================================================
     Name        : copyfile.c
-    Author      : 
+    Author      : Andrea Gottardi (151955)
     Version     :
     Description : Dati in input due file, copa il primo file nel secondo.
     ============================================================================

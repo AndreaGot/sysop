@@ -5,28 +5,25 @@ void usage();
 
 int main(int argc, char * argv[])
 {
-	int a,b,c,d,e,i;
-while ( (i = getopt(argc, argv, "abcde")) != -1)
+	int f,c,x,t,i;
+while ( (i = getopt(argc, argv, "fcxt")) != -1)
 	{
 		switch (i) 
 		{
 			/*
 			 * Handling options
 			 */
-			case 'a':
-				a=1;
-				break;
-			case 'b':
-				b = 1;
+			case 'f':
+				f=1;
 				break;
 			case 'c':
 				c = 1;
 				break;
-			case 'd':
-				d = 1;
+			case 'x':
+				x = 1;
 				break;
-			case 'e':
-				e = 1;
+			case 't':
+				t = 1;
 				break;
 			case '?':   /* unrecognized options */
 				printf("Unrecognized options -%c\n",optopt);
@@ -35,28 +32,24 @@ while ( (i = getopt(argc, argv, "abcde")) != -1)
 		}
 	}
 	
-	if(a==1)
-		printf("scrivo a \n");
-	
-	if(b==1)
-		printf("scrivo b \n");
+	if(f==1)
+		printf("crea/estraggo archivio specificato qui \n");
 	
 	if(c==1)
-		printf("scrivo c \n");
+		printf("creo archivio \n");
 	
-	if(d==1)
-		printf("scrivo d \n");
+	if(x==1)
+		printf("estraggo archivio \n");
 	
-	if(e==1)
-		printf("scrivo e \n");
+	if(t==1)
+		printf("elenco archivio \n");
 }
 
 void usage()
 {
 	printf("possibili comandi:\n");
-	printf("-a			scrive a\n");
-	printf("-b			scrive b\n");
-	printf("-c			scrive c\n");
-	printf("-d			scrive d\n");
-	printf("-e			scrive e\n");
+	printf("-f			crea/ estrae archivio\n");
+	printf("-x			creo archivio\n");
+	printf("-c			estrae archivio\n");
+	printf("-t			elenco archivio\n");
 }
