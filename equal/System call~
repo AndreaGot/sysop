@@ -1,13 +1,11 @@
 SYSTEM CALL DA UTILIZZARE
 
-opendir()
+mkdir()
 readdir()
-closedir()
 
 
 open()
 close()
 write()
-
 
 http://linux.die.net/man/2/syscalls

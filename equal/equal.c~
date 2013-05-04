@@ -52,6 +52,55 @@ int main( int argc, char *argv[]) {
 				}
 
 
+	    	        /* fopen returns 0, the NULL pointer, on failure */
+			/*	    	      
+			  if ( first == 0 )
+	    	        {
+	    	            printf( "Could not open file %s \n",argv[1]);
+	    	        }
+	    	        else if (second == 0)
+			{
+				printf( "Could not open file %s \n",argv[2]);
+			}else
+	    	        {
+				int start;
+				start = strrchr(percorsoFirst,"\\");
+						
+				strcpy(nomeFirst, start);
+				
+	    	            	int x;
+			    	int y;
+
+	    	            /* read one character at a time from file, stopping at EOF, which
+	    	               indicates the end of the file.  Note that the idiom of "assign
+	    	               to a variable, check the value" used below works because
+	    	               the assignment statement evaluates to the value assigned. */
+		/*
+	    	            while  ( (( x = fgetc( first ) ) != EOF ) &&  (( y = fgetc( second ) ) != EOF)&&(euguale==true))
+	    	            {	
+				if (x != y)
+				{	
+				   euguale = false;
+				}
+				ind++;
+	    	            }
+	    	            fclose( first );
+			    fclose( second );
+	    		}
+	}
+
+
+	if (euguale==true)
+	
+	    printf("%d \n",0);
+	}else
+	{
+	    char* nomifile;
+	    nomifile = strcat(argv[1],argv[2]);
+	    printf("%d \n",1);
+	    printf("I file diversi sono %s \n",nomeFirst);
+	}
+*/
 	 
 
 	return 0;
