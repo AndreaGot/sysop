@@ -31,7 +31,9 @@ char * scrivi(char * a, char * b)
 
 void read_words (FILE *f) {
     char x[1024];
+	printf("ci sono");
     while (fscanf(f, " %s", x) == 1) {
+		printf("here i am");
 		fprintf(arch," %s", x);
 		puts(x);
     }
@@ -46,7 +48,7 @@ int main(int argc, char * argv[])
 	
 	
 	archivio = scrivi(getcwd(NULL, 0), nome);
-    arch = fopen(archivio, "w+");
+    arch = fopen(archivio, "w");
 	
 	int i=3;
 	
@@ -59,7 +61,7 @@ int main(int argc, char * argv[])
 	}
 	
 	
-	par = fopen(argv[2], "w+");
+	par = fopen(argv[2], "r+");
 	read_words(par);
 	
 	fprintf(arch, "%s", LIST);
@@ -74,13 +76,8 @@ int main(int argc, char * argv[])
 	fprintf(arch, "%s", "\n");
 	fprintf(arch, "%s", CONTENT);
 	fprintf(arch, "%s", " ");
-	fseek(par,0,SEEK_SET);
-	read_words(par);
 	fprintf(arch, "%s", " ");
 	fprintf(arch, "%s", CONTENT);
-	fclose(par);
-	fclose(arch);
-	
 	return 0;
 }
 

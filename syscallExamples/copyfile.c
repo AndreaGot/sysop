@@ -66,7 +66,9 @@ int main( int argc, char *argv[])
 	// COPIA IL CONTENUTO DEL FILE SOURCE IN TARGET
 	
 			while ((n = read(first, buf, BUFSIZ)) > 0)
+			{
 				write(second, buf, n);
-	
+				puts("entro");
+			}
 return 0;
 }
