@@ -1,0 +1,15 @@
+La funzione mkbkp si occupa della creazione di un archivio contenente i file e le cartelle passate come parametri.
+
+Ha 3 funzioni: 
+
+	-c: crea il file di archivio
+	-f: specifica il nome del file di archivio
+	-x: estrae l'archivio nella cartella corrente
+	-t: stampa una lista di tutti i file contenuti nell'archivio
+
+Il funzionamento è abbastanza semplice: il programma, nel caso di una cartella, scorre il suo contenuto, salvando in un array il nome dei file e il nome delle sottocartelle in array rispettivi, denominati "files" e "dirs".
+Una volta finito questo processo, si procede alla creazione dell'archivio vero e proprio. Viene creato un file, il cui nome è specificato nei parametri di chiamata, che viene diviso in 3 parti principali: 
+
+	%files%: contiene una lista dei files dell'archivio
+	 %dirs%: contiene una lista delle sottocartelle dell'archivio
+      %content%: per ogni riga elenca il contenuto di ogni file dell'archivio
