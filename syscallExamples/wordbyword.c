@@ -14,8 +14,8 @@ void read_words (FILE *f) {
  }
  
  int main(int argc, char * argv[]) {
-    FILE *f;
-    f = fopen(argv[1], "r");
-	 read_words(f);
+    FILE *ciao;
+    ciao = fopen(argv[1], "r");
+	 read_words(ciao);
 	 return 0;
 } 

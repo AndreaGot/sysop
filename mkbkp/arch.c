@@ -1,10 +1,7 @@
-#include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <libgen.h>
 #define PERMS 0666
 #define LIST "%LIST%"
@@ -14,7 +11,8 @@
 
 char *copy, *filename, *archivio;
 
-FILE * arch, *par;
+FILE * arch;
+FILE * par;
 //------ DATO UN FILE (O UNA LISTA DI ESSI), CREA UN ARCHIVIO DI ESSI
 
 
@@ -34,9 +32,12 @@ char * scrivi(char * a, char * b)
 void read_words (FILE *f) {
     char x[1024];
     while (fscanf(f, " %s", x) == 1) {
-        puts(x);
+		fprintf(arch," %s", x);
+		puts(x);
     }
-}	
+}
+
+
 
 int main(int argc, char * argv[])
 {
@@ -45,7 +46,7 @@ int main(int argc, char * argv[])
 	
 	
 	archivio = scrivi(getcwd(NULL, 0), nome);
-    arch = fopen(archivio, "w");
+    arch = fopen(archivio, "w+");
 	
 	int i=3;
 	
@@ -53,11 +54,13 @@ int main(int argc, char * argv[])
 	{
 		copy = strdup(argv[i-1]);
 		filename = basename(argv[i-1]);
-		puts(filename);
-;		i++;
+		puts(filename);	
+		i++;
 	}
 	
-	par = fopen(argv[2], "r");
+	
+	par = fopen(argv[2], "w+");
+	read_words(par);
 	
 	fprintf(arch, "%s", LIST);
 	fprintf(arch, "%s", " ");
@@ -71,9 +74,12 @@ int main(int argc, char * argv[])
 	fprintf(arch, "%s", "\n");
 	fprintf(arch, "%s", CONTENT);
 	fprintf(arch, "%s", " ");
-	//read_words(par);
+	fseek(par,0,SEEK_SET);
+	read_words(par);
 	fprintf(arch, "%s", " ");
 	fprintf(arch, "%s", CONTENT);
+	fclose(par);
+	fclose(arch);
 	
 	return 0;
 }
