@@ -28,7 +28,7 @@ void usage();
 char * scrivi(char * a, char * b);
 void show_file (const char *filename, FILE *out);
 void creabkp(int numpar, char * param[], int ind);
-//void stampa();
+void stampa();
 
 
 
@@ -103,7 +103,7 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 			{																//	
 				printf("scrivo la lista dei file nell'archvio");			// ..pubblico la lista dei file
 				nome = argv[opt+1];
-				//stampa();
+				stampa();
 				
 			}
 		}
@@ -129,12 +129,9 @@ char * scrivi(char * a, char * b)
 	strcat(targetdir,"/");
 	strcat(targetdir,b);
 	
-	printf("%s", targetdir);	
+	printf("%s \n", targetdir);	
 	return targetdir;
 }
-
-
-
 
 
 
@@ -215,41 +212,38 @@ void creabkp(int numpar, char * param[], int ind)
 	fclose(arch);
 }
 
+void read_words (FILE *f) {
+    char x[1024];
+	bool listTrovata;
+    while (fscanf(f, " %s", x) == 1) {
+		if(strcmp(x, "%LIST%")==0 && listTrovata==false)
+		{
+			listTrovata= true;
+			printf("trovato il primo \n");
+			continue;
+		}
+		else if (strcmp(x, "%LIST%")==0 && listTrovata)
+		{
+			printf("trovato il secondo \n");
+			fseek(f, 0, SEEK_END);
+			continue;
+		}
+		else
+		{
+        puts(x);
+		}
+    }
+	printf("esco \n");
+	
+}
 
 void stampa()
 {
-#define CHUNK 7 /* read 6 bytes at a time */
-	char buf[CHUNK];
-	FILE *file;
-	bool primalist = false;
-	char * oggetto;
-	size_t nread;
-	oggetto = scrivi(getcwd(NULL, 0), nome);
-    printf("sono ntrato");
-	file = fopen(oggetto, "r");
-	if (file) {
-		while ((nread = fread(buf, 1, sizeof buf, file)) > 0)
-		{
-			if(strcat(buf,"%LIST%")==0 && primalist==false)
-			{
-				primalist = true;
-				continue;
-			}
-			else if(strcat(buf,"%LIST%")==0 && primalist==true)
-			{
-				continue;
-			}
-			else 
-			{
-			fwrite(buf, 1, nread, stdout);	
-			}
-
-		}
-		if (ferror(file)) {
-			/* deal with error */
-		}
-		fclose(file);
-	}	
+	FILE * ciao;
+	char* daListare;
+	daListare = scrivi(getcwd(NULL, 0), nome);
+    ciao = fopen(daListare, "r");
+	read_words(ciao);
 }
 
 void usage()
