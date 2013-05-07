@@ -1,0 +1,9 @@
+%LIST% -f -c backupfile word.c easy.c  %LIST%
+%DIRS%  %DIRS%
+%CONTENT% show_file: failed to open file '-f' (2)
+ %CONTENT%
+%CONTENT%  %CONTENT%
+%CONTENT% show_file: failed to open file 'backupfile' (2)
+ %CONTENT%
+%CONTENT% mene culo %CONTENT%
+%CONTENT% vezzi merda %CONTENT%

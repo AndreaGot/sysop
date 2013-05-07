@@ -3,6 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <libgen.h>
+#include <errno.h>
+#include <stdbool.h>
 #define PERMS 0666
 #define LIST "%LIST%"
 #define DIRS "%DIRS%"
@@ -29,16 +31,21 @@ char * scrivi(char * a, char * b)
 }
 
 
-void read_words (FILE *f) {
-    char x[1024];
-	printf("ci sono");
-    while (fscanf(f, " %s", x) == 1) {
-		printf("here i am");
-		fprintf(arch," %s", x);
-		puts(x);
+void show_file (const char *filename, FILE *out) {
+    int c;
+    FILE *file;
+    //fprintf(out, "%s(%s) BEGIN\n", __func__, filename);
+    file = fopen(filename, "r");
+    if (file) {
+        while ((c = fgetc(file)) != EOF) {
+            fputc(c, out);
+        }
+        fclose(file);
+    } else {
+        fprintf(out, "%s: failed to open file '%s' (%d)\n", __func__, filename, errno);
     }
+    //fprintf(out, "%s(%s) END\n", __func__, filename);
 }
-
 
 
 int main(int argc, char * argv[])
@@ -52,32 +59,48 @@ int main(int argc, char * argv[])
 	
 	int i=3;
 	
+	
+	fprintf(arch, "%s", LIST);
+	fprintf(arch, "%s", " ");
+	
 	while(i<=argc)
 	{
 		copy = strdup(argv[i-1]);
 		filename = basename(argv[i-1]);
 		puts(filename);	
+		fprintf(arch, "%s", filename);
+		fprintf(arch, "%s", " ");
 		i++;
 	}
 	
-	
-	par = fopen(argv[2], "r+");
-	read_words(par);
-	
-	fprintf(arch, "%s", LIST);
-	fprintf(arch, "%s", " ");
-	fprintf(arch, "%s", filename);
 	fprintf(arch, "%s", " ");
 	fprintf(arch, "%s", LIST);
 	fprintf(arch, "%s", "\n");
+	
+	
 	fprintf(arch, "%s", DIRS);
+	fprintf(arch, "%s", " ");
+	
+	//INSERIRE UN WHILE CHE INSERISCE LE EVENTUALI CARTELLE FORMANTI IL PERCORSO
+	
 	fprintf(arch, "%s", " ");
 	fprintf(arch, "%s", DIRS);
 	fprintf(arch, "%s", "\n");
-	fprintf(arch, "%s", CONTENT);
-	fprintf(arch, "%s", " ");
-	fprintf(arch, "%s", " ");
-	fprintf(arch, "%s", CONTENT);
+	i=3;
+	while(i<=argc)
+	{
+		fprintf(arch, "%s", CONTENT);
+		fprintf(arch, "%s", " ");
+		show_file(argv[i-1], arch);
+		fprintf(arch, "%s", " ");
+		fprintf(arch, "%s", CONTENT);
+		
+		fprintf(arch, "%s", "\n");
+		
+		i++;
+		
+		
+	}
+	
 	return 0;
 }
-
