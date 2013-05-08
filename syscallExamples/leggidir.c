@@ -8,6 +8,7 @@
 struct dirent *readdir(DIR *dirp);
 
 char * percorso;
+char buf[1024];
 DIR *cartella;
 struct dirent *elemento;
 
@@ -52,7 +53,9 @@ void scorriFolder(char* nome)
 				{
 				
 					{
-						percorso = scrivi(nome, elemento->d_name); //quando esce dalla cartella il percorso rimane lungo
+						char dir[1024];
+						dir = getcwd(buf, sizeof(buf));
+						percorso = scrivi(dir, elemento->d_name); //quando esce dalla cartella il percorso rimane lungo
 						scorriFolder(percorso);
 					}
 				}

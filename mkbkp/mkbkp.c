@@ -6,7 +6,9 @@
 #include <libgen.h>
 #include <errno.h>
 #include <stdbool.h>
-
+#include <dirent.h>
+#include <ftw.h>
+#include <sys/stat.h>
 
 
 #define PERMS 0666
@@ -29,7 +31,7 @@ char * scrivi(char * a, char * b);
 void show_file (const char *filename, FILE *out);
 void creabkp(int numpar, char * param[], int ind);
 void stampa();
-
+int list(const char *name, const struct stat *status, int type);
 
 
 
@@ -170,11 +172,22 @@ void creabkp(int numpar, char * param[], int ind)
 	
 	while(i<=numpar)
 	{
-		copy = strdup(param[i-1]);
-		filename = basename(param[i-1]);
-		puts(filename);	
-		fprintf(arch, "%s", filename);
-		fprintf(arch, "%s", " ");
+		
+		
+		if ((opendir(param[i-1])==NULL))
+		{
+			copy = strdup(param[i-1]);
+			filename = basename(param[i-1]);
+			puts(filename);	
+			fprintf(arch, "%s", filename);
+			fprintf(arch, "%s", " ");
+		}
+		else 
+		{
+			puts("this... is.. A FOLDEEEEEEEEEER");
+			ftw(param[i-1], list, 1);
+		}
+
 		i++;
 	}
 	
@@ -236,6 +249,21 @@ void read_words (FILE *f) {
 	printf("esco \n");
 	
 }
+
+int list(const char *name, const struct stat *status, int type) {
+	if(type == FTW_NS)
+		return 0;
+	
+	if(type == FTW_F)
+		printf("0%3o\t%s\n", status->st_mode&0777, name);
+		fprintf(arch, "%s ", name);
+	
+	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0)
+		printf("0%3o\t%s/\n", status->st_mode&0777, name);
+	
+	return 0;
+}
+
 
 void stampa()
 {
