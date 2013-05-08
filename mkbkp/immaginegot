@@ -1,0 +1,5 @@
+%LIST% /asd.png /.DS_Store /prova2/traghetti.cpp /traghetti.cpp   %LIST%
+%CONTENT% show_file: failed to open file 'asd.png' (2)
+ %CONTENT% 
+
+%CONTENT% .DS_Store  %CONTENT%%CONTENT% prova2/traghetti.cpp  %CONTENT%%CONTENT% traghetti.cpp  %CONTENT%
