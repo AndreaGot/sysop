@@ -25,6 +25,7 @@ char * nome;
 
 char ** globalargv;
 int globalargc;
+int lung;
 
 void usage();
 char * scrivi(char * a, char * b);
@@ -162,7 +163,7 @@ void creabkp(int numpar, char * param[], int ind)
 	
 	
 	archivio = scrivi(getcwd(NULL, 0), nome);
-    arch = fopen(archivio, "w");
+    arch = fopen(archivio, "w+");
 	
 	int i=ind+3;
 	
@@ -184,6 +185,7 @@ void creabkp(int numpar, char * param[], int ind)
 		}
 		else 
 		{
+			lung = strlen(param[i-1])+1;
 			puts("this... is.. A FOLDEEEEEEEEEER");
 			ftw(param[i-1], list, 1);
 		}
@@ -254,12 +256,16 @@ int list(const char *name, const struct stat *status, int type) {
 	if(type == FTW_NS)
 		return 0;
 	
-	if(type == FTW_F)
-		printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s ", name);
-	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0)
 		printf("0%3o\t%s/\n", status->st_mode&0777, name);
+	
+	if(type == FTW_F)
+		printf("0%3o\t%s\n", status->st_mode&0777, name);
+		fprintf(arch, "%s ", name + lung);
+		printf( "%s ", name + lung);
+		
+	
+
 	
 	return 0;
 }
