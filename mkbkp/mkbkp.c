@@ -29,9 +29,12 @@ int lung;
 
 void usage();
 char * scrivi(char * a, char * b);
+void read_words (FILE *f);
+void read_dirs (FILE *f);
 void show_file (const char *filename, FILE *out);
 void creabkp(int numpar, char * param[], int ind);
 void stampa();
+void estrai();
 int list(const char *name, const struct stat *status, int type);
 int listC(const char *name, const struct stat *status, int type);
 int listD(const char *name, const struct stat *status, int type);
@@ -103,6 +106,8 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 			if(x == true)													//
 			{																//
 				printf("estraggo archivio");								// ...estraggo..
+				nome = argv[opt+1];
+				estrai();
 			}																//
 			if(t == true)													// infine, se ho t...
 			{																//	
@@ -130,6 +135,16 @@ char * scrivi(char * a, char * b)
 	strcat(targetdir,b);													//copio anche b nella stringa, concatenandolo			
 	
 	printf("%s \n", targetdir);	
+	return targetdir;														// e il nuovo percorso è fatto
+}
+
+
+char * scriviDir(char * a, char * b)
+{
+	
+	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
+	strcpy(targetdir,a);													//copio a nella stringa creata poco fa
+	strcat(targetdir,b);													//copio anche b nella stringa, concatenandolo			
 	return targetdir;														// e il nuovo percorso è fatto
 }
 
@@ -302,6 +317,43 @@ void read_words (FILE *f) {
 
 
 
+void read_dirs (FILE *f) {
+    char x[1024];
+	bool dirsTrovata;
+	long position;
+	mode_t mode;
+	mode = (S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+	
+    while (fscanf(f, " %s", x) == 1) {
+		if(strcmp(x, DIRS)==0 && dirsTrovata==false)
+		{
+			dirsTrovata= true;
+			position = ftell(f);
+			puts("trovato il primo \n");
+			printf("DIRS trovato alla posizione %ld", position);
+			continue;
+		}
+		else if (strcmp(x, DIRS)==0 && dirsTrovata)
+		{
+			
+			position = ftell(f);
+			printf("trovato il secondo \n");
+			printf("DIRS trovato alla posizione %ld", position);
+			fseek(f, 0, SEEK_END);
+			continue;
+		}
+		else if(dirsTrovata)
+		{
+			char* folder;											// stringa contenente il percorso da aprire (verrà creato in seguito)
+			folder = scriviDir(getcwd(NULL, 0), x);
+			mkdir(folder, mode);
+
+		}
+    }
+	printf("esco \n");
+	
+}
+
 
 
 
@@ -376,14 +428,21 @@ int listD(const char *name, const struct stat *status, int type) {
 
 void stampa()
 {
-	FILE * ciao;
-	char* daListare;
-	daListare = scrivi(getcwd(NULL, 0), nome);
-    ciao = fopen(daListare, "r");
-	read_words(ciao);
+	FILE * ciao;											
+	char* daListare;											// stringa contenente il percorso da aprire (verrà creato in seguito)
+	daListare = scrivi(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
+    ciao = fopen(daListare, "r");								// apre il file di archivio in modalità solo lettura
+	read_words(ciao);											// legge il file parola per parola
 }
 
-
+void estrai()
+{
+	FILE * ciao;											
+	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
+	daEstrarre = scrivi(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
+    ciao = fopen(daEstrarre, "r");								// apre il file di archivio in modalità solo lettura
+	read_dirs(ciao);											// legge il file parola per parola
+}
 
 void usage()
 {
