@@ -29,6 +29,8 @@ int lung;
 int inizio;
 int fine;
 int daleggere;
+
+
 void usage();
 char * scrivi(char * a, char * b);
 void read_words (FILE *f);
@@ -131,7 +133,7 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 
 
 
-char * scrivi(char * a, char * b)
+char * scrivi(char * a, char * b)									//collega due stringhe inserendo un / tra di esse (in questo programma, "xxx", "/", "yyy")
 {
 	
 	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
@@ -144,7 +146,7 @@ char * scrivi(char * a, char * b)
 }
 
 
-char * scriviDir(char * a, char * b)
+char * scriviDir(char * a, char * b)								// collega due stringhe (in questo programma, "xxx" e "/yyy")
 {
 	
 	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
@@ -170,10 +172,10 @@ void show_file (const char *filename, FILE *out) {							//scrive il contenuto d
         fprintf(out, "%s: failed to open file '%s' (%d)\n", __func__, filename, errno);
     }
     //fprintf(out, "%s(%s) END\n", __func__, filename);
-}
+}				//copia un file lettera per lettera
 
 
-void creabkp(int numpar, char * param[], int ind)
+void creabkp(int numpar, char * param[], int ind)					// crea il backup
 {
 	char * nome;										
 	nome = param[ind+1];
@@ -318,7 +320,7 @@ void read_words (FILE *f) {
     }
 	printf("esco \n");
 	
-}
+}										// lista i file contenuti nella sezione %LIST%
 
 
 void read_dirs (FILE *f) {
@@ -356,10 +358,10 @@ void read_dirs (FILE *f) {
     }
 	printf("esco \n");
 	
-}
+}										// legge la sezione %DIRS% dell'archivio
 
 
-void crea_file(FILE *f)
+void crea_file(FILE *f)												// crea i file estratti dall'archivio
 {
 	int contatore = 0;
 	char x[1024];
@@ -396,7 +398,7 @@ void crea_file(FILE *f)
 	printf("esco \n");
 }
 
-void trovaInizioFine(int cont)
+void trovaInizioFine(int cont)										// trova il carattere di inizio e di fine del file nella sezione %CONTENT%
 {
 	FILE* contenuto;
 	char * path;
@@ -438,7 +440,7 @@ void trovaInizioFine(int cont)
 	
 }
 
-void scriviFile(const char * arrivo)
+void scriviFile(const char * arrivo)								//scrive i file creati in precedenza
 {
 	FILE * partenza;
     FILE * target;
@@ -492,7 +494,7 @@ int list(const char *name, const struct stat *status, int type) {
 	}	
 	
 	return 0;
-}
+}	//per FTW - lista i nomi dei file
 
 //-------------------------------------------------------FINE LIST-----------------------------------------------------------------------
 //-------------------------------------------------------INIZIO LISTC PER %CONTENT%-----------------------------------------------------------------------
@@ -519,7 +521,7 @@ int listC(const char *name, const struct stat *status, int type) {
 	
 	
 	return 0;
-}
+}	// per FTW - lista i contenuti dei file
 
 //-------------------------------------------------------FINE LISTC-----------------------------------------------------------------------
 //-------------------------------------------------------INIZIO LISTD PER %DIRS%-----------------------------------------------------------------------
@@ -539,11 +541,11 @@ int listD(const char *name, const struct stat *status, int type) {
 	puts("uscito");
 	
 	return 0;
-}
+}	// per FTW - lista i nomi delle directory
 
 //-------------------------------------------------------FINE LISTD-----------------------------------------------------------------------
 
-void stampa()
+void stampa()															// stampa la sezione %LIST% dell'archivio
 {
 	FILE * archivio;											
 	char* daListare;											// stringa contenente il percorso da aprire (verrà creato in seguito)
@@ -553,7 +555,7 @@ void stampa()
 	fclose(archivio);
 }
 
-void estrai()
+void estrai()															// estrae i dati dall'archivio
 {
 	FILE * archivio;											
 	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
@@ -566,7 +568,7 @@ void estrai()
 	fclose(archivio);
 }
 
-void usage()
+void usage()															// come utilizzare il programma
 {
 	printf("possibili comandi:\n");
 	printf("-f			crea/ estrae archivio\n");
