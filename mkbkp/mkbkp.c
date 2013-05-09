@@ -343,7 +343,7 @@ int listC(const char *name, const struct stat *status, int type) {
 		show_file(name, arch);
 		fprintf(arch, "%s", " ");
 		fprintf(arch, "%s", CONTENT);
-		fprintf(arch, "\n", CONTENT);
+		fprintf(arch, "\n");
 		
 	}
 	
