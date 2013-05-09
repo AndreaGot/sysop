@@ -9,7 +9,7 @@
 #include <dirent.h>
 #include <ftw.h>
 #include <sys/stat.h>
-
+#include "mkbkp.h"
 
 #define PERMS 0666
 #define LIST "%LIST%"
@@ -29,23 +29,6 @@ int lung;
 int inizio;
 int fine;
 int daleggere;
-
-
-void usage();
-char * scrivi(char * a, char * b);
-void read_words (FILE *f);
-void read_dirs (FILE *f);
-void show_file (const char *filename, FILE *out);
-void crea_file(FILE *f);
-void creabkp(int numpar, char * param[], int ind);
-void stampa();
-void estrai();
-void trovaInizioFine( int cont);
-void scriviFile(const char * arrivo);
-int list(const char *name, const struct stat *status, int type);
-int listC(const char *name, const struct stat *status, int type);
-int listD(const char *name, const struct stat *status, int type);
-
 
 
 
@@ -133,7 +116,7 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 
 
 
-char * scrivi(char * a, char * b)									//collega due stringhe inserendo un / tra di esse (in questo programma, "xxx", "/", "yyy")
+char * collegaSlash(char * a, char * b)									//collega due stringhe inserendo un / tra di esse (in questo programma, "xxx", "/", "yyy")
 {
 	
 	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
@@ -146,7 +129,7 @@ char * scrivi(char * a, char * b)									//collega due stringhe inserendo un / 
 }
 
 
-char * scriviDir(char * a, char * b)								// collega due stringhe (in questo programma, "xxx" e "/yyy")
+char * collega(char * a, char * b)								// collega due stringhe (in questo programma, "xxx" e "/yyy")
 {
 	
 	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
@@ -158,7 +141,7 @@ char * scriviDir(char * a, char * b)								// collega due stringhe (in questo p
 
 
 
-void show_file (const char *filename, FILE *out) {							//scrive il contenuto di un file in un altro, carattere per carattere (così si mantengono gli whitespace)
+void writeByChar (const char *filename, FILE *out) {							//scrive il contenuto di un file in un altro, carattere per carattere (così si mantengono gli whitespace)
     int c;
     FILE *file;
     //fprintf(out, "%s(%s) BEGIN\n", __func__, filename);
@@ -181,7 +164,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	nome = param[ind+1];
 	
 	
-	archivio = scrivi(getcwd(NULL, 0), nome);
+	archivio = collegaSlash(getcwd(NULL, 0), nome);
     arch = fopen(archivio, "w+");
 	
 	
@@ -271,7 +254,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 			fprintf(arch, "%s", CONTENT);
 			fprintf(arch, "%s", " ");
 			copy = strdup(param[i-1]);
-			show_file(copy, arch);
+			writeByChar(copy, arch);
 			fprintf(arch, "%s", " ");
 			fprintf(arch, "%s \n", CONTENT);
 			
@@ -351,7 +334,7 @@ void read_dirs (FILE *f) {
 		else if(dirsTrovata)
 		{
 			char* folder;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-			folder = scriviDir(getcwd(NULL, 0), x);
+			folder = collega(getcwd(NULL, 0), x);
 			mkdir(folder, mode);
 
 		}
@@ -386,7 +369,7 @@ void crea_file(FILE *f)												// crea i file estratti dall'archivio
 		{
 			contatore++;
 			char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
-			file = scriviDir(getcwd(NULL, 0), x);
+			file = collega(getcwd(NULL, 0), x);
 			creat(file, PERMS);
 			printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
 			trovaInizioFine(contatore);
@@ -404,7 +387,7 @@ void trovaInizioFine(int cont)										// trova il carattere di inizio e di fin
 	char * path;
 	char x[4096];
 	int i =1;
-	path = scrivi(getcwd(NULL, 0), nome);
+	path = collegaSlash(getcwd(NULL, 0), nome);
 	
 	contenuto = fopen(path, "r");
 	while (fscanf(contenuto, "%s", x) == 1) 
@@ -449,7 +432,7 @@ void scriviFile(const char * arrivo)								//scrive i file creati in precedenza
 	int i = 0;
 	int pos;
 	char * path;
-	path = scrivi(getcwd(NULL, 0), nome);
+	path = collegaSlash(getcwd(NULL, 0), nome);
 	partenza = fopen(path, "r");
 	fseek(partenza, inizio, SEEK_SET);
 	target = fopen(arrivo, "w");											//apro il file
@@ -511,7 +494,7 @@ int listC(const char *name, const struct stat *status, int type) {
 		fprintf(arch, "%s", CONTENT);
 		fprintf(arch, "%s", " ");
 		printf("0%3o\t%s\n", status->st_mode&0777, name);
-		show_file(name, arch);
+		writeByChar(name, arch);
 		fprintf(arch, "%s", " ");
 		fprintf(arch, "%s", CONTENT);
 		fprintf(arch, "\n");
@@ -549,7 +532,7 @@ void stampa()															// stampa la sezione %LIST% dell'archivio
 {
 	FILE * archivio;											
 	char* daListare;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-	daListare = scrivi(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
+	daListare = collegaSlash(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
     archivio = fopen(daListare, "r");								// apre il file di archivio in modalità solo lettura
 	read_words(archivio);										// legge il file parola per parola
 	fclose(archivio);
@@ -559,7 +542,7 @@ void estrai()															// estrae i dati dall'archivio
 {
 	FILE * archivio;											
 	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-	daEstrarre = scrivi(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
+	daEstrarre = collegaSlash(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
     archivio = fopen(daEstrarre, "r");								// apre il file di archivio in modalità solo lettura
 	read_dirs(archivio);											// legge il file parola per parola
 	rewind(archivio);
