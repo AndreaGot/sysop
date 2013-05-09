@@ -1,0 +1,68 @@
+%LIST% /easy.c /ciao.cpp  %LIST%
+%DIRS%    %DIRS%
+%CONTENT% #include <iostream>
+
+using namespace std;
+
+int main ()
+{
+    int a = 2;
+    long int b = 2;
+    int c = 0;
+    while (b < 1000000)
+    {
+		
+        a = b;
+        int d = 2;
+        while (a != 4)
+        {
+            if (a % 2 == 0)
+                a /= 2;
+            else
+                a = 3*a + 1;
+            d++;
+        }
+        if (d > c)
+        {
+            cout << b << ' ' << d << endl;
+            c=d;
+        }
+        b++;
+    }
+    cout << c;
+    return 0;
+} %CONTENT% 
+
+%CONTENT% #include <iostream>
+
+using namespace std;
+
+int main ()
+{
+    int a = 2;
+    long long int b = 2;
+    int c = 0;
+    while (b < 1000000)
+    {
+		
+        a = b;
+        int d = 2;
+        while (a != 4)
+        {
+            if (a % 2 == 0)
+                a /= 2;
+            else
+                a = 3*a + 1;
+            d++;
+        } QUESTO È IL FILE CIAO .CPP
+        if (d > c)
+        {
+            cout << b << ' ' << d << endl;
+            c=d;
+        }
+        b++;
+    }
+    cout << c;
+    return 0;
+} %CONTENT% 
+

@@ -26,15 +26,20 @@ char * nome;
 char ** globalargv;
 int globalargc;
 int lung;
-
+int inizio;
+int fine;
+int daleggere;
 void usage();
 char * scrivi(char * a, char * b);
 void read_words (FILE *f);
 void read_dirs (FILE *f);
 void show_file (const char *filename, FILE *out);
+void crea_file(FILE *f);
 void creabkp(int numpar, char * param[], int ind);
 void stampa();
 void estrai();
+void trovaInizioFine( int cont);
+void scriviFile(const char * arrivo);
 int list(const char *name, const struct stat *status, int type);
 int listC(const char *name, const struct stat *status, int type);
 int listD(const char *name, const struct stat *status, int type);
@@ -212,7 +217,7 @@ void creabkp(int numpar, char * param[], int ind)
 		else 
 		{
 			lung = strlen(param[i-1]);										// se è una cartella
-			puts("this... is.. A FOLDEEEEEEEEEER");							//
+			puts("thisis A FOLDER");							//
 			ftw(param[i-1], list, 1);										//scorrila tutta	
 		}
 		fprintf(arch, "%s", " ");
@@ -289,7 +294,7 @@ void creabkp(int numpar, char * param[], int ind)
 
 void read_words (FILE *f) {
     char x[1024];
-	bool listTrovata;
+	bool listTrovata = false;
     while (fscanf(f, " %s", x) == 1) {
 		if(strcmp(x, "%LIST%")==0 && listTrovata==false)
 		{
@@ -306,7 +311,7 @@ void read_words (FILE *f) {
 			fseek(f, 0, SEEK_END);
 			continue;
 		}
-		else
+		else if (listTrovata)
 		{
         puts(x);
 		}
@@ -316,10 +321,9 @@ void read_words (FILE *f) {
 }
 
 
-
 void read_dirs (FILE *f) {
     char x[1024];
-	bool dirsTrovata;
+	bool dirsTrovata = false;
 	long position;
 	mode_t mode;
 	mode = (S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
@@ -355,6 +359,119 @@ void read_dirs (FILE *f) {
 }
 
 
+void crea_file(FILE *f)
+{
+	int contatore = 0;
+	char x[1024];
+	bool listTrovata = false;
+    while (fscanf(f, " %s", x) == 1) {
+		if(strcmp(x, "%LIST%")==0 && listTrovata==false)
+		{
+			listTrovata= true;
+			puts("trovato il primo \n");
+			continue;
+		}
+		else if (strcmp(x, "%LIST%")==0 && listTrovata)
+		{
+			long position;
+			position = ftell(f);
+			printf("trovato il secondo \n");
+			printf("LIST trovato alla posizione %ld", position);
+			fseek(f, 0, SEEK_END);
+			break;
+		}
+		else if (listTrovata)
+		{
+			contatore++;
+			char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
+			file = scriviDir(getcwd(NULL, 0), x);
+			creat(file, PERMS);
+			printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
+			trovaInizioFine(contatore);
+			printf("ora scrivo il file trovato");
+			scriviFile(file);
+			//inserisco funzione che parte da inizio e scrive carattere per carattere nel file destinazione. se la posizione di ftell è uguale a fine, allora esci.
+		}
+    }
+	printf("esco \n");
+}
+
+void trovaInizioFine(int cont)
+{
+	FILE* contenuto;
+	char * path;
+	char x[1024];
+	int i =1;
+	path = scrivi(getcwd(NULL, 0), nome);
+	
+	contenuto = fopen(path, "r");
+	while (fscanf(contenuto, "%s", x) == 1) 
+	{
+		if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)-1) )
+		{
+			inizio = ftell(contenuto);
+			puts("trovato il primo \n");
+			//puts(x);
+			printf("CONTENT trovato alla posizione %d \n", inizio);
+			i++;
+		}
+		else if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)) )
+		{
+			fine = ftell(contenuto);
+			daleggere = fine-9;
+			puts("trovato il primo \n");
+			printf("CONTENT trovato alla posizione %d \n", fine);
+			break;
+			i++;
+		}
+		else if(strcmp(x, "%CONTENT%")==0)
+		{
+			i++;	
+		}
+
+
+		printf("giro numero %d \n", i);
+    }
+	
+	printf("esco da trova Inizio File  \n");
+	fclose(contenuto);
+	
+}
+
+void scriviFile(const char * arrivo)
+{
+	FILE * partenza;
+    FILE * target;
+	int c;
+	int spazio = 'a';
+	int i = 0;
+	int pos;
+	char * path;
+	path = scrivi(getcwd(NULL, 0), nome);
+	partenza = fopen(path, "r");
+	fseek(partenza, inizio, SEEK_SET);
+	target = fopen(arrivo, "w");											//apro il file
+    if (target) {																//se è aperto
+        while ((c = fgetc(partenza)) != EOF && ftell(partenza)<=fine-10) {									//e il carattere preso non eccede la fine del file
+            fputc(c, target);
+			fputc(c, stdout);
+			pos = ftell(partenza);
+			if(pos==fine)
+			{
+				break;
+			}
+																			//scrivo lo stesso carattere in out (file in uscita)
+        }																	//
+  
+		fclose(target);														//chiudo il file
+		fclose(partenza);
+	} 
+	else 
+	{
+        printf("errore di scrittura del file \n");
+    }
+	
+}
 
 
 //-------------------------------------------------------INIZIO LIST PER %LIST%-----------------------------------------------------------------------
@@ -428,27 +545,33 @@ int listD(const char *name, const struct stat *status, int type) {
 
 void stampa()
 {
-	FILE * ciao;											
+	FILE * archivio;											
 	char* daListare;											// stringa contenente il percorso da aprire (verrà creato in seguito)
 	daListare = scrivi(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    ciao = fopen(daListare, "r");								// apre il file di archivio in modalità solo lettura
-	read_words(ciao);											// legge il file parola per parola
+    archivio = fopen(daListare, "r");								// apre il file di archivio in modalità solo lettura
+	read_words(archivio);										// legge il file parola per parola
+	fclose(archivio);
 }
 
 void estrai()
 {
-	FILE * ciao;											
+	FILE * archivio;											
 	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
 	daEstrarre = scrivi(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    ciao = fopen(daEstrarre, "r");								// apre il file di archivio in modalità solo lettura
-	read_dirs(ciao);											// legge il file parola per parola
+    archivio = fopen(daEstrarre, "r");								// apre il file di archivio in modalità solo lettura
+	read_dirs(archivio);											// legge il file parola per parola
+	rewind(archivio);
+	crea_file(archivio);
+	
+	fclose(archivio);
 }
 
 void usage()
 {
 	printf("possibili comandi:\n");
 	printf("-f			crea/ estrae archivio\n");
-	printf("-x			creo archivio\n");
-	printf("-c			estrae archivio\n");
+	printf("-c			creo archivio\n");
+	printf("-x			estrae archivio\n");
 	printf("-t			elenco archivio\n");
+	printf("è obbligatorio usare f per ogni operazione\n");
 }
