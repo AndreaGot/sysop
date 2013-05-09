@@ -1,0 +1,102 @@
+#include <unistd.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+
+
+
+void printdir(char *dir, int depth, int* i,int* lung)
+{
+    DIR *dp;
+    
+	
+
+
+    struct dirent *entry;
+    struct stat statbuf;
+    dp = opendir(dir) ;
+    if(dp == NULL) {
+        printf("cannot open directory: %s\n", dir);
+        return ;
+    }
+
+
+    chdir(dir);
+
+	
+	
+
+    while((entry = readdir(dp))  != NULL) {
+        lstat(entry->d_name,&statbuf);	
+			
+			
+
+	printf(" percorso[%d] = %s, ",*i-1,*percorsi[*i-1]);
+
+        if(S_ISDIR(statbuf.st_mode)) {
+
+		
+            /* Found a directory, but ignore . and .. */
+            if(strcmp(".",entry->d_name) == 0 || strcmp("..",entry->d_name) == 0)
+                continue;
+
+		
+            printf("%*s%s/\n",depth,"",entry->d_name);
+	   
+
+            /* Recurse at a new indent level */
+           printdir(entry->d_name,depth+4,i,lung);
+        }
+        else {
+		printf("%*s%s\n",depth,"",entry->d_name);
+		
+
+    }
+    chdir("..");
+    closedir(dp);
+   
+}
+
+}
+
+int main(int argc, char* argv[])
+{
+
+    char** vectorString;
+    char* sorg;
+    int nelem [1];
+    int lun [1];
+    char** indirizzoDef[1];
+   
+   
+    sorg = "/home/giulian/sysop/equal";
+    
+    vectorString = malloc(sizeof(char **)*2);
+    
+    *vectorString = sorg;
+
+    *indirizzoDef = vectorString;
+    
+    (*nelem) = 0;
+    (*lun) = 2;
+
+    printf("l'indirizzo è %p \n",vectorString);
+    printf("Directory scan of /home/giulian/sysop/ \n");
+    printdir("/home/giulian/sysop/equal",0,nelem,lun);
+	
+    printf("done.\n");
+	
+    printf("il vettore è lungo %d", *nelem);
+    
+    //vectorString = *indirizzoDef;
+   
+	
+	
+
+    exit(0);
+}
+
+
+
