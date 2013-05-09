@@ -480,14 +480,14 @@ int list(const char *name, const struct stat *status, int type) {
 	if(type == FTW_NS)
 		return 0;
 	
-	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0)
+	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung,"/.DS_Store")!=0)
 	{
 		printf("0%3o\t%s\n", status->st_mode&0777, name);
 	}
-	else if(type == FTW_F)
+	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
 	{
 		printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s ", name + lung);
+		fprintf(arch, "%s  ", name + lung);
 		printf( "%s ", name + lung);
 	}	
 	
@@ -501,10 +501,10 @@ int listC(const char *name, const struct stat *status, int type) {
 	if(type == FTW_NS)
 		return 0;
 	
-	if(type == FTW_D && strcmp(".", name) != 0)
+	if(type == FTW_D && strcmp(".", name) != 0 && strcmp(name + lung,".DS_Store")!=0)
 		printf("0%3o\t%s/\n", status->st_mode&0777, name);
 	
-	if(type == FTW_F)
+	if(type == FTW_F && strcmp(name + lung,".DS_Store")!=0)
 	{
 		fprintf(arch, "%s", CONTENT);
 		fprintf(arch, "%s", " ");
@@ -528,7 +528,7 @@ int listD(const char *name, const struct stat *status, int type) {
 	if(type == FTW_NS)
 		return 0;
 	
-	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0)
+	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung, ".DS_Store")!=0)
 	{
 		puts("entrato");
 		printf("0%3o\t%s\n", status->st_mode&0777, name);
