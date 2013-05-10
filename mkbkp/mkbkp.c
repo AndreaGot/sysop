@@ -145,7 +145,7 @@ void writeByChar (const char *filename, FILE *out) {							//scrive il contenuto
     int c;
     FILE *file;
     //fprintf(out, "%s(%s) BEGIN\n", __func__, filename);
-    file = fopen(filename, "r");											//apro il file
+    file = fopen(filename, "rb");											//apro il file
     if (file) {																//se è aperto
         while ((c = fgetc(file)) != EOF) {									//e il carattere preso non eccede la fine del file
             fputc(c, out);													//scrivo lo stesso carattere in out (file in uscita)
@@ -165,7 +165,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	
 	
 	archivio = collegaSlash(getcwd(NULL, 0), nome);
-    arch = fopen(archivio, "w+");
+    arch = fopen(archivio, "w+b");
 	
 	
 	//-----------------------------------------------------------------------------------------------------------------------------------
@@ -344,119 +344,119 @@ void read_dirs (FILE *f) {
 }										// legge la sezione %DIRS% dell'archivio
 
 
-void crea_file(FILE *f)												// crea i file estratti dall'archivio
-{
-	int contatore = 0;
-	char x[4096];
-	bool listTrovata = false;
-    while (fscanf(f, " %s", x) == 1) {
-		if(strcmp(x, "%LIST%")==0 && listTrovata==false)
-		{
-			listTrovata= true;
-			puts("trovato il primo \n");
-			continue;
-		}
-		else if (strcmp(x, "%LIST%")==0 && listTrovata)
-		{
-			long position;
-			position = ftell(f);
-			printf("trovato il secondo \n");
-			printf("LIST trovato alla posizione %ld", position);
-			fseek(f, 0, SEEK_END);
-			break;
-		}
-		else if (listTrovata)
-		{
-			contatore++;
-			char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
-			file = collega(getcwd(NULL, 0), x);
-			creat(file, PERMS);
-			printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
-			trovaInizioFine(contatore);
-			printf("ora scrivo il file trovato");
-			scriviFile(file);
-			//inserisco funzione che parte da inizio e scrive carattere per carattere nel file destinazione. se la posizione di ftell è uguale a fine, allora esci.
-		}
-    }
-	printf("esco \n");
-}
-
-void trovaInizioFine(int cont)										// trova il carattere di inizio e di fine del file nella sezione %CONTENT%
-{
-	FILE* contenuto;
-	char * path;
-	char x[4096];
-	int i =1;
-	path = collegaSlash(getcwd(NULL, 0), nome);
-	
-	contenuto = fopen(path, "r");
-	while (fscanf(contenuto, "%s", x) == 1) 
+	void crea_file(FILE *f)												// crea i file estratti dall'archivio
 	{
-		if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)-1) )
-		{
-			inizio = ftell(contenuto);
-			puts("trovato il primo \n");
-			//puts(x);
-			printf("CONTENT trovato alla posizione %d \n", inizio);
-			i++;
-		}
-		else if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)) )
-		{
-			fine = ftell(contenuto);
-			daleggere = fine-9;
-			puts("trovato il primo \n");
-			printf("CONTENT trovato alla posizione %d \n", fine);
-			break;
-			i++;
-		}
-		else if(strcmp(x, "%CONTENT%")==0)
-		{
-			i++;	
-		}
-
-
-		printf("giro numero %d \n", i);
-    }
-	
-	printf("esco da trova Inizio File  \n");
-	fclose(contenuto);
-	
-}
-
-void scriviFile(const char * arrivo)								//scrive i file creati in precedenza
-{
-	FILE * partenza;
-    FILE * target;
-	int c;
-	int spazio = 'a';
-	int i = 0;
-	int pos;
-	char * path;
-	path = collegaSlash(getcwd(NULL, 0), nome);
-	partenza = fopen(path, "r");
-	fseek(partenza, inizio, SEEK_SET);
-	target = fopen(arrivo, "w");											//apro il file
-    if (target) {																//se è aperto
-        while ((c = fgetc(partenza)) != EOF && ftell(partenza)<=fine-10) {									//e il carattere preso non eccede la fine del file
-            fputc(c, target);
-			fputc(c, stdout);
-			pos = ftell(partenza);
-			if(pos==fine)
+		int contatore = 0;
+		char x[4096];
+		bool listTrovata = false;
+		while (fscanf(f, " %s", x) == 1) {
+			if(strcmp(x, "%LIST%")==0 && listTrovata==false)
 			{
+				listTrovata= true;
+				puts("trovato il primo \n");
+				continue;
+			}
+			else if (strcmp(x, "%LIST%")==0 && listTrovata)
+			{
+				long position;
+				position = ftell(f);
+				printf("trovato il secondo \n");
+				printf("LIST trovato alla posizione %ld", position);
+				fseek(f, 0, SEEK_END);
 				break;
 			}
-																			//scrivo lo stesso carattere in out (file in uscita)
-        }																	//
-  
-		fclose(target);														//chiudo il file
-		fclose(partenza);
-	} 
-	else 
+			else if (listTrovata)
+			{
+				contatore++;
+				char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
+				file = collega(getcwd(NULL, 0), x);
+				creat(file, PERMS);
+				printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
+				trovaInizioFine(contatore);
+				printf("ora scrivo il file trovato");
+				scriviFile(file);
+				//inserisco funzione che parte da inizio e scrive carattere per carattere nel file destinazione. se la posizione di ftell è uguale a fine, allora esci.
+			}
+		}
+		printf("esco \n");
+	}
+
+	void trovaInizioFine(int cont)										// trova il carattere di inizio e di fine del file nella sezione %CONTENT%
 	{
-        printf("errore di scrittura del file \n");
-    }
-	
-}
+		FILE* contenuto;
+		char * path;
+		char x[4096];
+		int i =1;
+		path = collegaSlash(getcwd(NULL, 0), nome);
+		
+		contenuto = fopen(path, "rb");
+		while (fscanf(contenuto, "%s", x) == 1) 
+		{
+			if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)-1) )
+			{
+				inizio = ftell(contenuto);
+				puts("trovato il primo \n");
+				//puts(x);
+				printf("CONTENT trovato alla posizione %d \n", inizio);
+				i++;
+			}
+			else if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)) )
+			{
+				fine = ftell(contenuto);
+				daleggere = fine-9;
+				puts("trovato il primo \n");
+				printf("CONTENT trovato alla posizione %d \n", fine);
+				break;
+				i++;
+			}
+			else if(strcmp(x, "%CONTENT%")==0)
+			{
+				i++;	
+			}
+
+
+			printf("giro numero %d \n", i);
+		}
+		
+		printf("esco da trova Inizio File  \n");
+		fclose(contenuto);
+		
+	}
+
+	void scriviFile(const char * arrivo)								//scrive i file creati in precedenza
+	{
+		FILE * partenza;
+		FILE * target;
+		int c;
+		int spazio = 'a';
+		int i = 0;
+		int pos;
+		char * path;
+		path = collegaSlash(getcwd(NULL, 0), nome);
+		partenza = fopen(path, "rb");
+		fseek(partenza, inizio, SEEK_SET);
+		target = fopen(arrivo, "wb");											//apro il file
+		if (target) {																//se è aperto
+			while ((c = fgetc(partenza)) != EOF && ftell(partenza)<=fine-10) {									//e il carattere preso non eccede la fine del file
+				fputc(c, target);
+				fputc(c, stdout);
+				pos = ftell(partenza);
+				if(pos==fine)
+				{
+					break;
+				}
+																				//scrivo lo stesso carattere in out (file in uscita)
+			}																	//
+	  
+			fclose(target);														//chiudo il file
+			fclose(partenza);
+		} 
+		else 
+		{
+			printf("errore di scrittura del file \n");
+		}
+		
+	}
 
 
 //-------------------------------------------------------INIZIO LIST PER %LIST%-----------------------------------------------------------------------
@@ -533,7 +533,7 @@ void stampa()															// stampa la sezione %LIST% dell'archivio
 	FILE * archivio;											
 	char* daListare;											// stringa contenente il percorso da aprire (verrà creato in seguito)
 	daListare = collegaSlash(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    archivio = fopen(daListare, "r");								// apre il file di archivio in modalità solo lettura
+    archivio = fopen(daListare, "rb");								// apre il file di archivio in modalità solo lettura
 	read_words(archivio);										// legge il file parola per parola
 	fclose(archivio);
 }
@@ -543,7 +543,7 @@ void estrai()															// estrae i dati dall'archivio
 	FILE * archivio;											
 	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
 	daEstrarre = collegaSlash(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    archivio = fopen(daEstrarre, "r");								// apre il file di archivio in modalità solo lettura
+    archivio = fopen(daEstrarre, "rb");								// apre il file di archivio in modalità solo lettura
 	read_dirs(archivio);											// legge il file parola per parola
 	rewind(archivio);
 	crea_file(archivio);
