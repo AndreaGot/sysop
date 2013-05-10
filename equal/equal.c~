@@ -24,10 +24,12 @@ struct dirent *readdir(DIR *dirp);
 int readdir_r(DIR *dirp, struct dirent *entry, struct dirent **result);
 
 int conta(const char *name, const struct stat *status, int type);
-int salvapercFST(const char *name, const struct stat *status, int type);
 int salvapercSND(const char *name, const struct stat *status, int type);
+int salvapercFST(const char *name, const struct stat *status, int type);
 
 bool isDIRECTORY(char * elemento);
+bool compareFile(char * primo, char* secondo);
+bool confronta(char** primo, char ** secondo);
 
 int lung = 0;
 int globalsum;
@@ -37,9 +39,11 @@ int FSTlen = 0;
 int SNDlen = 0;
 
 int main( int argc, char *argv[]) {
+
 	bool firstIsFile = true;
 	bool secondIsFile = true;
-	
+	bool result;	
+
 	char* percfirst = argv[1];
 	
 	char* percsecond = argv[2];
@@ -88,7 +92,29 @@ int main( int argc, char *argv[]) {
 			ftw(percsecond,salvapercSND,1);
 		}
 
+		if (secondIsFile && firstIsFile)
+			{
+				result = comparefile(percfirst,percsecond);//finisce il programma
+			}else if (secondIsFile)
+			{
+				char** percorso;
+				*percorso = percsecond;
+				result = confronta(percorso,percorsiFST);
+
+			}else if (firstIsFile)
+			{
+				char** percorso;
+				*percorso = percfirst;
+				result = confronta(percorso,percorsiSND);
+			
+			}else //sono tutte e due cartelle
+			{
+				result = confronta(percorsiFST,percorsiSND);
+			}
+
 	}
+
+	
 	return 0;
 }
 
@@ -178,4 +204,23 @@ int salvapercSND(const char *name, const struct stat *status, int type) {
 	}	
 	
 	return 0;
+}
+
+bool compareFile(char * primo, char* secondo)
+{
+	FILE *fileFST;
+	FILE *fileSND;
+	fileFST = fopen(primo, "r");
+	fileSND = fopen(secondo, "r");
+
+	
+	return true;
+}
+
+
+bool confronta(char** primo, char ** secondo)
+{
+
+
+	return true;
 }
