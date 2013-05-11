@@ -434,7 +434,7 @@ void read_dirs (FILE *f) {
 		char * path;
 		path = collegaSlash(getcwd(NULL, 0), nome);
 		partenza = fopen(path, "rb");
-		fseek(partenza, inizio, SEEK_SET);
+		fseek(partenza, inizio+1, SEEK_SET);
 		target = fopen(arrivo, "wb");											//apro il file
 		if (target) {																//se è aperto
 			while ((c = fgetc(partenza)) != EOF && ftell(partenza)<=fine-10) {									//e il carattere preso non eccede la fine del file
