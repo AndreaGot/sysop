@@ -94,22 +94,27 @@ int main( int argc, char *argv[]) {
 
 		if (secondIsFile && firstIsFile)
 			{
-				result = comparefile(percfirst,percsecond);//finisce il programma
+				result = compareFile(percfirst,percsecond);//finisce il programma
+				if (result)
+					printf("true \n");
+				else
+					printf("false: %s and %s are different \n",percfirst,percsecond);
+
 			}else if (secondIsFile)
 			{
 				char** percorso;
 				*percorso = percsecond;
-				result = confronta(percorso,percorsiFST);
+				//result = confronta(percorso,percorsiFST);
 
 			}else if (firstIsFile)
 			{
 				char** percorso;
 				*percorso = percfirst;
-				result = confronta(percorso,percorsiSND);
+				//result = confronta(percorso,percorsiSND);
 			
 			}else //sono tutte e due cartelle
 			{
-				result = confronta(percorsiFST,percorsiSND);
+				//result = confronta(percorsiFST,percorsiSND);
 			}
 
 	}
@@ -210,11 +215,42 @@ bool compareFile(char * primo, char* secondo)
 {
 	FILE *fileFST;
 	FILE *fileSND;
-	fileFST = fopen(primo, "r");
-	fileSND = fopen(secondo, "r");
+	fileFST = fopen(primo, "rb");
+	fileSND = fopen(secondo, "rb");
+	bool uguali = true;
 
+	if ( fileFST == NULL )
+	       {
+	       printf("Cannot open %s for reading ", primo );
+	       return false;
+	       }
+	else if (fileSND == NULL)
+	       {
+	       	printf("Cannot open %s for reading ", secondo );
+		return false;
+		}
+   	else
+       	{
+       		char ch1  =  getc( fileFST ) ;
+       		char ch2  =  getc( fileSND ) ;
+
+       while( (ch1!=EOF) && (ch2!=EOF) && (uguali==true))
+        {
+            ch1 = getc(fileFST);
+            ch2 = getc(fileSND) ;
+	    if(ch1!=ch2)
+		uguali = false;
+        }
+
+        if (uguali)
+            return true;
+        else if (ch1 !=  ch2)
+            return false;
+
+        fclose ( fileFST );
+        fclose ( fileSND );
+       }
 	
-	return true;
 }
 
 
