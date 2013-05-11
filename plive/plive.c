@@ -9,16 +9,17 @@ void CPUvalue()
 	FILE * proc;
 	proc = fopen("/proc/stat", "rb");
 	printf("file opened \n");
-	fscanf(proc, "%*s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &inizio[0], &inizio[1], &inizio[2], &inizio[3], &inizio[4], &inizio[5], &inizio[6], &inizio[7], &inizio[8], &inizio[9]); 
-	
+	fscanf(proc, "%*s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &inizio[0], &inizio[1], &inizio[2], &inizio[3], &inizio[4], &inizio[5], &inizio[6], &inizio[7], &inizio[8], &inizio[9]); //legge ogni valore dei vari settori della cpu
 	fclose(proc);
-	sleep(10);
+	
+	sleep(10); //aspetta
+	
 	proc = fopen("/proc/stat", "rb");
 	fscanf(proc, "%*s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &fine[0], &fine[1], &fine[2], &fine[3], &fine[4], &fine[5], &fine[6], &fine[7], &fine[8], &fine[9]);
-	fclose(proc);
+	fclose(proc); //legge ogni valore dei vari settori della cpu
 	
 	int i =0;
-	while(i<=9)
+	while(i<=9) //somma i valori 
 	{
 		start += inizio[i];
 		end += fine[i];
@@ -27,7 +28,7 @@ void CPUvalue()
 		i++;
 	}
 	
-	printf("la cpu utilizzata nell'intervallo di tempo \n è pari a %lf jiffies, \n cioè al %lf per cento \n", end-start, ((end-start)/end)*100);
+	printf("la cpu utilizzata nell'intervallo di tempo \n è pari a %lf jiffies, \n cioè al %lf per cento \n", end-start, ((end-start)/end)*100); //cpu utilizzata e percentuale sul totale
 
 }	
 

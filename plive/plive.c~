@@ -1,9 +1,10 @@
 #include <stdio.h>
+#include <ftw.h>
 
 double inizio[10], fine[10], start, end;
-char a[5];
+int *array;
 
-int main()
+void CPUvalue()
 {
 	FILE * proc;
 	proc = fopen("/proc/stat", "rb");
@@ -27,7 +28,54 @@ int main()
 	}
 	
 	printf("la cpu utilizzata nell'intervallo di tempo \n è pari a %lf jiffies, \n cioè al %lf per cento \n", end-start, ((end-start)/end)*100);
-return 0;	
+
 }	
 
+int list(const char *name, const struct stat *status, int type) {
+	int i = 0;
+	if(type == FTW_NS)
+		return 0;
+	
+	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0)
+	{
+		//salva il nome della cartella in un array solo se è un numero
+	}
+	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
+	{
+		
+	}	
+	
+	return 0;
+}	
+
+int main()
+{
+	ftw(param[i-1], list, 1);
+	
+	//prendi l'array delle cartelle
+	//scorrilo aprendole tutte
+	//leggi il file /proc/pid/stat
+	//salva in un array il valore relativo alla cpu
+	//chiudi il file
+	
+	//trova valore cpu totale
+	
+	
+	//aspetta x secondi
+	
+	
+	//riapri tutti i file
+	//leggi il valore della cpu e sottrai il valore precedentemente salvato
+	
+	//trova valore cpu totale
+	//crea variabile CPUdiff =  cputotalefine - cputotaleinizio
+	
+	// crea un array con PIDdiff/CPUdiff
+	//ordina l'array mantenendo anche i nomi dei PID
+	
+	
+	
+	//stampa i primi 10 PID
+
+}
 
