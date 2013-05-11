@@ -51,7 +51,7 @@ int list(const char *name, const struct stat *status, int type) {
 
 int main()
 {
-	ftw(param[i-1], list, 1);
+	ftw(param[i-1], list, 1); //forse è meglio la opendir
 	
 	//prendi l'array delle cartelle
 	//scorrilo aprendole tutte
