@@ -18,6 +18,8 @@
 #include <ftw.h>
 #include <dirent.h>
 
+#include <sort.h>
+
 
 struct dirent *readdir(DIR *dirp);
 
