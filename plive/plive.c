@@ -16,37 +16,38 @@ double *cpufine;
 int size = 0;
 
 
-double CPUvalue(double * array)
+double CPUvalue(double * array) 					//restituisce il numero di jiffies utilizzati dalla cpu in un certo momento
 {
 	double result;
 	int i = 0;
 	FILE * proc;
-	proc = fopen("/proc/stat", "rb");
+	proc = fopen("/proc/stat", "rb");				//apro il file /proc/stat, che contiene i parametri generali della CPU (10 valori corrispondenti a 10 diversi utilizzi)
 	printf("file opened \n");
-	fscanf(proc, "%*s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &array[0], &array[1], &array[2], &array[3], &array[4], &array[5], &array[6], &array[7], &array[8], &array[9]); //legge ogni valore dei vari settori della cpu
+													//legge ogni valore dei vari settori della cpu
+	fscanf(proc, "%*s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &array[0], &array[1], &array[2], &array[3], &array[4], &array[5], &array[6], &array[7], &array[8], &array[9]); 
 	fclose(proc);
 	
-	while(i<=9) //somma i valori 
+	while(i<=9) 									//somma i valori 
 	{
 		result += array[i];
 		i++;
 	}
 	
-	return result;
+	return result;								
 
 }	
 
-void trovaProcessi()
+void trovaProcessi()								// prendo la lista dei processi attivi nel momento della chiamata	
 {
 int i = 0;
 DIR *dir;
 struct dirent *ent;
 bool trovato = false;
 
-
-if ((dir = opendir ("/proc/")) != NULL) 
+size = 0;
+if ((dir = opendir ("/proc/")) != NULL) 			//apro la cartella /proc/
 	{
-		while ((ent = readdir (dir)) != NULL) {
+		while ((ent = readdir (dir)) != NULL) {		//e leggo il suo contenuto
 			if(trovato)
 			{
     			size++;
@@ -54,13 +55,13 @@ if ((dir = opendir ("/proc/")) != NULL)
     			processi[size-1] = atoi(ent->d_name);
     			
     		}
-    		if(strcmp(ent->d_name, "self")==0)
+    		if(strcmp(ent->d_name, "self")==0)		//Il file "self" è l'ultimo prima dei processi, nel modo in cui li legge la readdir(), quindi da "self"+1 in poi sono tutti processi
     			trovato = true;
   		}
   		closedir (dir);
   		while(i<size)
   		{
-  			printf("%d \n", processi[i]);
+  			printf("%d \n", processi[i]);			//stampa i processi trovati (inutile, si può togliere)
   			i++;
   		}
   		printf("Il numero di processi è %d \n", size);
@@ -77,28 +78,26 @@ if ((dir = opendir ("/proc/")) != NULL)
 
 void leggiPidStat(int index, double *array)
 {
-	printf("entrato \n");
 	FILE * pid;
 	double cpu[2];
 	double cpusum;
 	char * perc;
-	printf("si apre? \n");
-	perc = malloc(16);
+	perc = malloc(16);								//alloca 16 caratteri ("/proc" + pid + "/stat")
 	
-	sprintf(perc, "/proc/%d/stat\0", processi[index]);
+	sprintf(perc, "/proc/%d/stat\0", processi[index]);		//scrive su path il percorso del file (usata altrimenti non riuscivo a convertire un int e.g. "3457" in stringa
 	pid = fopen(perc, "r");
-	fscanf(pid, "%*d %*s %*s %*d %*d %*d %*d %*d %*f %*f %*f %*d %*d %lf %lf", &cpu[0], &cpu[1]);
+	fscanf(pid, "%*d %*s %*s %*d %*d %*d %*d %*d %*f %*f %*f %*d %*d %lf %lf", &cpu[0], &cpu[1]); //prendo solo il 14mo e il 15mo campo (user cpu e kernel cpu)
 	
-	cpusum = cpu[0] + cpu[1];
+	cpusum = cpu[0] + cpu[1];						
 	
-	array[index] = cpusum;
+	array[index] = cpusum;							//scrive nell'array passato, il valore della cpu (sempre in jiffies)
 
 }
 
 
 
 
-void q_sort(double *array, int ileft, int iright)
+void q_sort(double *array, int ileft, int iright) //quicksort
 {
   int l_hold = ileft;
   int r_hold = iright;
@@ -146,7 +145,7 @@ void q_sort(double *array, int ileft, int iright)
     q_sort(array, pivot+1, iright);
 }
 
-void quickSort(double *array, int array_size)
+void quickSort(double *array, int array_size) //chiamata a quicksort
 {
   q_sort(array, 0, array_size - 1);
 }
@@ -155,17 +154,23 @@ void quickSort(double *array, int array_size)
 
 int main()
 {
-	int i =0;
+int i =0;
+
+
+for(;;){
+
 	trovaProcessi();
-	cpuinizio=(double *) malloc(size*sizeof(double));
-	cpufine=(double *) malloc(size*sizeof(double));
+	cpuinizio=(double *) malloc(size*sizeof(double));	//siccome ho già trovato il numero dei processi, posso allocare 
+	cpufine=(double *) malloc(size*sizeof(double));	
+
+	i=0;
+														//la memoria degli array che conterranno i cpu jiffies
 	while(i<size)
 	{
-		printf("entrato con valore di i pari a %d\n", i);
-		leggiPidStat(i, cpuinizio);
+		leggiPidStat(i, cpuinizio);						//legge il file /proc/pid/stat, cercando i valori di cpu
 		i++;
 	}
-	start = CPUvalue(inizio);
+	start = CPUvalue(inizio);							//legge il file /proc/stat, estraendo i valori di cpu
 	
 	sleep(1);
 	
@@ -174,11 +179,11 @@ int main()
 	{
 		printf("entrato con valore di i pari a %d\n", i);
 		leggiPidStat(i, cpufine);
-		cpufine[i] -= cpuinizio[i]; //ho la differenza di utilizzo cpu dei processi
+		cpufine[i] -= cpuinizio[i]; //ho la differenza di utilizzo cpu dei processi (in jiffies
 		i++;
 	}
 	end = CPUvalue(fine);
-	end-= start; //ho la differenza di utilizzo cpu nel tempo
+	end-= start; //ho la differenza di utilizzo cpu nel tempo (in jiffies)
 	
 	quickSort(cpufine, size);
 	
@@ -190,7 +195,7 @@ int main()
 		i++;
 	}
 
-	//printf("la cpu utilizzata nell'intervallo di tempo \n è pari a %lf jiffies, \n cioè al %lf per cento \n", end-start, ((end-start)/end)*100); //cpu utilizzata e percentuale sul totale
+}
 	
 	return 0;
 }
