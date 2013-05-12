@@ -1,13 +1,24 @@
-SYSTEM CALL DA UTILIZZARE
-
-mkdir()
-readdir()
-
-
-open()
-close()
-write()
-
-MODIFICARE COMANDO TOP (ha molte cose che ci possono servire (refresh, elenco.. bisogna solo capire cosa può andare e cosa no)
-
-http://linux.die.net/man/2/syscalls
+	//prendi l'array delle cartelle
+	//scorrilo aprendole tutte
+	//leggi il file /proc/pid/stat
+	//salva in un array il valore relativo alla cpu
+	//chiudi il file
+	
+	//trova valore cpu totale
+	
+	
+	//aspetta x secondi
+	
+	
+	//riapri tutti i file
+	//leggi il valore della cpu e sottrai il valore precedentemente salvato
+	
+	//trova valore cpu totale
+	//crea variabile CPUdiff =  cputotalefine - cputotaleinizio
+	
+	// crea un array con PIDdiff/CPUdiff
+	//ordina l'array mantenendo anche i nomi dei PID
+	
+	
+	
+	//stampa i primi 10 PID
