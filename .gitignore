@@ -15,3 +15,6 @@
 *.exe
 *.out
 *.app
+
+# gedit temporary files
+*~
