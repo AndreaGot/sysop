@@ -18,7 +18,6 @@
 #include <ftw.h>
 #include <dirent.h>
 
-#include <sort.h>
 
 
 struct dirent *readdir(DIR *dirp);
@@ -32,6 +31,8 @@ int salvapercFST(const char *name, const struct stat *status, int type);
 bool isDIRECTORY(char * elemento);
 bool compareFile(char * primo, char* secondo);
 bool confronta(char** primo, char ** secondo);
+
+int comp(const void *x, const void *y);
 
 int lung = 0;
 int globalsum;
@@ -73,6 +74,14 @@ int main( int argc, char *argv[]) {
 			globalsum = 0;
 			//riempio l'array
 			ftw(percfirst,salvapercFST,1);
+			qsort((char**)percorsiFST,FSTlen, sizeof(char**),comp);
+		
+			int i = 0;
+			while(i<FSTlen)
+			{
+				printf("[%d] = %s \n",i,percorsiFST[i]);
+				i++;
+			}
 		}
 
 		
@@ -92,6 +101,15 @@ int main( int argc, char *argv[]) {
 			globalsum = 0;
 			//riempio l'array
 			ftw(percsecond,salvapercSND,1);
+			//ordina
+			qsort((char**)percorsiSND,SNDlen, sizeof(char**),comp);
+			int i = 0;
+			while(i<SNDlen)
+			{
+				printf("[%d] = %s \n",i,percorsiSND[i]);
+				i++;
+			}		
+			
 		}
 
 		if (secondIsFile && firstIsFile)
@@ -134,14 +152,11 @@ int conta(const char *name, const struct stat *status, int type) {
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0)
 	{
-		printf( "%s \n", name + lung);
 		globalsum++;
 	}
 	else if(type == FTW_F)
 	{
-		
 		globalsum++;
-		printf( "%s \n", name + lung);
 	}	
 	
 	return 0;
@@ -159,18 +174,27 @@ int salvapercFST(const char *name, const struct stat *status, int type) {
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && globalsum != FSTlen)
 	{
 		
-		char * stringa = (char*)(name+lung);
-		percorsiFST[globalsum] = stringa ;
-		printf( "%s \n", percorsiFST[globalsum] );
+		char * stringa = (char*)malloc(sizeof(char*)*sizeof(name+lung));
+		strcpy(stringa,(name+lung));
+
+		percorsiFST[globalsum] = (char*)malloc(sizeof(char*)* sizeof(stringa));
+		strcpy(percorsiFST[globalsum],stringa);
+
+
+		
 		
 		globalsum++;
 	}
 	else if(type == FTW_F && globalsum != FSTlen)
 	{
 		
-		char * stringa = (char*)(name+lung);
-		percorsiFST[globalsum] = stringa;
-		printf( "%s \n", percorsiFST[globalsum] );
+		char * stringa = (char*)malloc(sizeof(char*)*sizeof(name+lung));
+		strcpy(stringa,(name+lung));
+
+		percorsiFST[globalsum] = (char*)malloc(sizeof(char*)* sizeof(stringa));
+		strcpy(percorsiFST[globalsum],stringa);
+
+	
 		globalsum++;
 	}	
 	
@@ -195,18 +219,26 @@ int salvapercSND(const char *name, const struct stat *status, int type) {
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && globalsum != SNDlen)
 	{
 		
-		char * stringa = (char*)(name+lung);
-		percorsiSND[globalsum] = stringa ;
-		printf( "%s \n", percorsiSND[globalsum] );
+		char * stringa = (char*)malloc(sizeof(char*)*sizeof(name+lung));
+		strcpy(stringa,(name+lung));
+
+		percorsiSND[globalsum] = (char*)malloc(sizeof(char*)* sizeof(stringa));
+		strcpy(percorsiSND[globalsum],stringa);
+
+		
 		
 		globalsum++;
 	}
-	else if(type == FTW_F && globalsum != FSTlen)
+	else if(type == FTW_F && globalsum != SNDlen)
 	{
 		
-		char * stringa = (char*)(name+lung);
-		percorsiSND[globalsum] = stringa;
-		printf( "%s \n", percorsiSND[globalsum] );
+		char * stringa = (char*)malloc(sizeof(char*)*sizeof(name+lung));
+		strcpy(stringa,(name+lung));
+
+		percorsiSND[globalsum] = (char*)malloc(sizeof(char*)*sizeof(stringa));
+		strcpy(percorsiSND[globalsum],stringa);
+
+		
 		globalsum++;
 	}	
 	
@@ -261,4 +293,9 @@ bool confronta(char** primo, char ** secondo)
 
 
 	return true;
+}
+
+int comp(const void *x, const void *y)
+{
+    return(strcmp(*((char**)x),*((char**)y)));      
 }
