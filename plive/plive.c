@@ -166,8 +166,26 @@ void quickSort(double *array, int array_size) //chiamata a quicksort
 
 
 
-int main()
+int main(int argc, char* argv)
 {
+	
+	int numeroproc;	
+
+	while ( (i = getopt(argc, argv, "n")) != -1)
+	{
+		switch (i) 
+		{
+				/*
+				 * Handling options
+				 */
+			case 'n':
+				numeroproc = argv[3];
+				break;
+			default:
+				numeroproc = 10;
+		}
+	}	
+	
 int i =0;
 
 
