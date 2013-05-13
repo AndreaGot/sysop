@@ -1,3 +1,17 @@
+/*
+ ============================================================================
+ Academic Year : 2012-2013
+ Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
+ Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
+ Name          : plive.c
+ Description   : Visualizza gli N processi più "costosi" in termini di utilizzo di tempo CPU
+ ============================================================================
+ */
+
+
+
+
+
 #include <stdio.h>
 #include <ftw.h>
 #include <unistd.h>
@@ -195,6 +209,8 @@ for(;;){
 		i++;
 	}
 
+	free(cpuinizio);
+	free(cpufine);
 }
 	
 	return 0;

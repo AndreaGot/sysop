@@ -1,3 +1,13 @@
+/*
+ ============================================================================
+ Academic Year : 2012-2013
+ Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
+ Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
+ Name          : mkbkp.h
+ Description   : Header file di mkbkp.c
+ ============================================================================
+ */
+
 void usage();
 char * collega(char * a, char * b);
 char * collegaSlash(char * a, char * b);

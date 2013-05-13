@@ -1,14 +1,12 @@
 /*
  ============================================================================
- Name        : mkbkp.c
- Author      : Giuliano Tortoreto and Andrea Gottardi
- Version     : 0.1
- Copyright   : Your copyright notice
- Description : 
+ Academic Year : 2012-2013
+ Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
+ Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
+ Name          : mkbkp.c
+ Description   : Archivia i file specificati, li estrae ed elenca il contenuto dell'archivio
  ============================================================================
  */
-
-
 
 #include <getopt.h>
 #include <stdio.h>

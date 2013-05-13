@@ -1,10 +1,10 @@
 /*
  ============================================================================
- Name        : equal.c
- Author      : Giuliano Tortoreto and Andrea Gottardi
- Version     : 0.1
- Copyright   : Your copyright notice
- Description : 
+ Academic Year : 2012-2013
+ Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
+ Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
+ Name          : equal.c
+ Description   : Dati due oggetti (file o cartelle), restituisce true se sono uguali, false altrimenti
  ============================================================================
  */
 
