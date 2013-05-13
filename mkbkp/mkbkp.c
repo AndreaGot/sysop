@@ -78,8 +78,15 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 				opt++;
 			default:    /* should not reached */
 				usage();
+				
+		
 		}
+		
+
 	}
+	
+	
+
 	
 	globalargv = argv;														//salvo la lista dei parametri
 	globalargc = argc;														//e il numero di essi, mi serviranno poi
