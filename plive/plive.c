@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <fcntl.h>
+#include "../managelogs/managelogs.h"
 
 
 
@@ -29,7 +30,10 @@ double *cpuinizio;
 double *cpufine;
 int dormi = 1;
 int size = 0;
-
+				char * wpath;
+				char * wexec;
+				int wparent;
+				FILE * wproc;
 int kbhit(void)
 {
 	struct termios oldt, newt;
@@ -211,6 +215,8 @@ void quickSort(double *array, int array_size) //chiamata a quicksort
 
 int main(int argc, char* argv[])
 {
+
+	crealog(argv[0]);
 	int i =0;
 	int numeroproc;	
 	numeroproc = 10;
@@ -267,7 +273,15 @@ i=0;
 			
 			while(i<numeroproc)
 			{
-				printf("%d \t \t \t %lf \n", processi[size-1-i], (cpufine[size-1-i]/end)*100);
+				wpath = malloc(17);
+				sprintf(wpath, "/proc/%d/stat\0", processi[size-1-i]);
+				wproc = fopen(wpath, "r");
+				fscanf(wproc, "%*d (%s) %*s %d", wexec, &wparent);
+				fclose(wproc);
+				free(wpath);
+				
+				printf("%d \t %s \t %d \t %lf \n", processi[size-1-i],wexec, wparent,(cpufine[size-1-i]/end)*100);
+				
 				i++;
 			}
 
