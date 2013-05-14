@@ -107,18 +107,18 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 		{																	//
 			if(c == true)													// ...e c...	
 			{																//
-				printf("creo un archivio con gli attributi dati");			// ...creo l'archivio...
+				printf("creo un archivio con gli attributi dati \n \n");			// ...creo l'archivio...
 				creabkp(globalargc, globalargv, opt);						//					
 			}																// se al posto di c c'è x...
 			if(x == true)													//
 			{																//
-				printf("estraggo archivio");								// ...estraggo..
+				printf("estraggo archivio \n");								// ...estraggo..
 				nome = argv[opt+1];
 				estrai();
 			}																//
 			if(t == true)													// infine, se ho t...
 			{																//	
-				printf("scrivo la lista dei file nell'archvio \n");			// ..pubblico la lista dei file
+				printf("scrivo la lista dei file nell'archivio \n\n");			// ..pubblico la lista dei file
 				nome = argv[opt+1];
 				stampa();
 				
@@ -292,6 +292,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	
 	//-------------------------------------------------------FINE CONTENT-----------------------------------------------------------------------
 	fclose(arch);
+	puts("creazione terminata!\n");
 }
 
 void read_words (FILE *f) {
@@ -484,13 +485,13 @@ int list(const char *name, const struct stat *status, int type) {
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung,"/.DS_Store")!=0)
 	{
-		//printf("0%3o\t%s\n", status->st_mode&0777, name);
+		//printf("archivio cartella: \t%s\n", name);
 	}
 	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
 	{
 		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 		fprintf(arch, "%s  ", name + lung);
-		//printf( "%s ", name + lung);
+		printf( "archivio file \t%s \n", name + lung);
 	}	
 	
 	return 0;
@@ -538,7 +539,7 @@ int listD(const char *name, const struct stat *status, int type) {
 		//puts("fatto");
 		//printf( "%s ", name + lung);
 	}
-	puts("uscito");
+	//puts("uscito");
 	
 	return 0;
 }	// per FTW - lista i nomi delle directory
@@ -549,23 +550,36 @@ void stampa()															// stampa la sezione %LIST% dell'archivio
 {
 	FILE * archivio;											
 	char* daListare;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-	daListare = collegaSlash(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    archivio = fopen(daListare, "rb");								// apre il file di archivio in modalità solo lettura
+	daListare = collegaSlash(getcwd(NULL, 0), nome);			// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
+    if(access(daListare, F_OK)==-1)
+	{
+		puts("Il file che si vuole listare non esiste");
+		exit(1);
+	}
+	
+	archivio = fopen(daListare, "rb");								// apre il file di archivio in modalità solo lettura
 	read_words(archivio);										// legge il file parola per parola
 	fclose(archivio);
+	puts("\nlettura terminata!");
 }
 
 void estrai()															// estrae i dati dall'archivio
 {
 	FILE * archivio;											
 	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-	daEstrarre = collegaSlash(getcwd(NULL, 0), nome);					// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    archivio = fopen(daEstrarre, "rb");								// apre il file di archivio in modalità solo lettura
+	daEstrarre = collegaSlash(getcwd(NULL, 0), nome);			// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
+    if(access(daEstrarre, F_OK)==-1)
+	{
+		puts("Il file da estrarre non esiste");
+		exit(1);
+	}
+	archivio = fopen(daEstrarre, "rb");								// apre il file di archivio in modalità solo lettura
 	read_dirs(archivio);											// legge il file parola per parola
 	rewind(archivio);
 	crea_file(archivio);
 	
 	fclose(archivio);
+	puts("estrazione terminata!");
 }
 
 void usage()															// come utilizzare il programma
