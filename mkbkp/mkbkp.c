@@ -295,7 +295,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 }
 
 void read_words (FILE *f) {
-    char x[4096];
+    char x[8192];
 	bool listTrovata = false;
     while (fscanf(f, " %s", x) == 1) {
 		if(strcmp(x, "%LIST%")==0 && listTrovata==false)
@@ -324,7 +324,7 @@ void read_words (FILE *f) {
 
 
 void read_dirs (FILE *f) {
-    char x[4096];
+    char x[8192];
 	bool dirsTrovata = false;
 	long position;
 	mode_t mode;
@@ -364,7 +364,7 @@ void read_dirs (FILE *f) {
 	void crea_file(FILE *f)												// crea i file estratti dall'archivio
 	{
 		int contatore = 0;
-		char x[4096];
+		char x[8192];
 		bool listTrovata = false;
 		while (fscanf(f, " %s", x) == 1) {
 			if(strcmp(x, "%LIST%")==0 && listTrovata==false)
@@ -402,7 +402,7 @@ void read_dirs (FILE *f) {
 	{
 		FILE* contenuto;
 		char * path;
-		char x[4096];
+		char x[8192];
 		int i =1;
 		path = collegaSlash(getcwd(NULL, 0), nome);
 		
