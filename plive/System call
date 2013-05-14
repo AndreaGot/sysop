@@ -22,3 +22,8 @@
 	
 	
 	//stampa i primi 10 PID
+
+
+
+sezione 4 di proc/pid/stat: parent process
+sezione 2 di proc/pid/stat: executable name
