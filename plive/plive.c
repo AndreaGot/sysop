@@ -13,13 +13,13 @@
 
 
 #include <stdio.h>
-#include <ftw.h>
 #include <unistd.h>
 #include <dirent.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <termios.h>
+#include <fcntl.h>
 
 
 
@@ -29,6 +29,40 @@ double *cpuinizio;
 double *cpufine;
 int dormi = 1;
 int size = 0;
+
+int kbhit(void)
+{
+	struct termios oldt, newt;
+	int ch;
+	int oldf;
+	
+	tcgetattr(STDIN_FILENO, &oldt);
+	newt = oldt;
+	newt.c_lflag &= ~(ICANON | ECHO);
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+	fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+	
+	ch = getchar();
+	
+	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+	fcntl(STDIN_FILENO, F_SETFL, oldf);
+	
+	if(ch > 48 && ch < 58)
+	{
+		dormi = ch-48;
+	}
+	else if(ch == 81 || ch==113)
+	{
+		exit(1);
+	}
+	
+	
+	return 0;
+}
+
+
+
 
 double CPUvalue(double * array) 					//restituisce il numero di jiffies utilizzati dalla cpu in un certo momento
 {
@@ -196,49 +230,51 @@ int main(int argc, char* argv[])
 i=0;
 
 
-for(;;){
-	
-	trovaProcessi();
-	cpuinizio=(double *) malloc(size*sizeof(double));	//siccome ho già trovato il numero dei processi, posso allocare 
-	cpufine=(double *) malloc(size*sizeof(double));	
+	//for(;;)
+	//{
+		while(!kbhit())
+		{
+			trovaProcessi();
+			cpuinizio=(double *) malloc(size*sizeof(double));	//siccome ho già trovato il numero dei processi, posso allocare 
+			cpufine=(double *) malloc(size*sizeof(double));	
 
-	i=0;
-														//la memoria degli array che conterranno i cpu jiffies
-	while(i<size)
-	{
-		leggiPidStat(i, cpuinizio);						//legge il file /proc/pid/stat, cercando i valori di cpu
-		i++;
-	}
-	start = CPUvalue(inizio);							//legge il file /proc/stat, estraendo i valori di cpu
-	
-	
-	sleep(dormi);
-	
-	i=0;
-	while(i<size)
-	{
-		//printf("entrato con valore di i pari a %d\n", i);
-		leggiPidStat(i, cpufine);
-		cpufine[i] -= cpuinizio[i]; //ho la differenza di utilizzo cpu dei processi (in jiffies
-		i++;
-	}
-	end = CPUvalue(fine);
-	end-= start; //ho la differenza di utilizzo cpu nel tempo (in jiffies)
-	
-	quickSort(cpufine, size);
-	
-	i=0;
-	
-	while(i<numeroproc)
-	{
-		printf("%d \t \t \t %lf \n", processi[size-1-i], (cpufine[size-1-i]/end)*100);
-		i++;
-	}
+			i=0;
+																//la memoria degli array che conterranno i cpu jiffies
+			while(i<size)
+			{
+				leggiPidStat(i, cpuinizio);						//legge il file /proc/pid/stat, cercando i valori di cpu
+				i++;
+			}
+			start = CPUvalue(inizio);							//legge il file /proc/stat, estraendo i valori di cpu
+			
+			
+			sleep(dormi);
+			
+			i=0;
+			while(i<size)
+			{
+				//printf("entrato con valore di i pari a %d\n", i);
+				leggiPidStat(i, cpufine);
+				cpufine[i] -= cpuinizio[i]; //ho la differenza di utilizzo cpu dei processi (in jiffies
+				i++;
+			}
+			end = CPUvalue(fine);
+			end-= start; //ho la differenza di utilizzo cpu nel tempo (in jiffies)
+			
+			quickSort(cpufine, size);
+			
+			i=0;
+			
+			while(i<numeroproc)
+			{
+				printf("%d \t \t \t %lf \n", processi[size-1-i], (cpufine[size-1-i]/end)*100);
+				i++;
+			}
 
-	free(cpuinizio);
-	free(cpufine);
-}
-	
+			free(cpuinizio);
+			free(cpufine);
+		}
+	//}
 	return 0;
 }
 
