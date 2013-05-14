@@ -118,7 +118,7 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 			}																//
 			if(t == true)													// infine, se ho t...
 			{																//	
-				printf("scrivo la lista dei file nell'archvio");			// ..pubblico la lista dei file
+				printf("scrivo la lista dei file nell'archvio \n");			// ..pubblico la lista dei file
 				nome = argv[opt+1];
 				stampa();
 				
@@ -315,7 +315,7 @@ void read_words (FILE *f) {
 		}
 		else if (listTrovata)
 		{
-        //puts(x);
+        puts(x);
 		}
     }
 	//printf("esco \n");
@@ -456,7 +456,7 @@ void read_dirs (FILE *f) {
 		if (target) {																//se è aperto
 			while ((c = fgetc(partenza)) != EOF && ftell(partenza)<=fine-10) {									//e il carattere preso non eccede la fine del file
 				fputc(c, target);
-				fputc(c, stdout);
+				//fputc(c, stdout);
 				pos = ftell(partenza);
 				if(pos==fine)
 				{
