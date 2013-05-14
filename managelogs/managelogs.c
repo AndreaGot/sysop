@@ -15,15 +15,20 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <libgen.h>
+#include <sys/stat.h> 
+#include <sys/types.h> 
+#include <dirent.h>
+#include <fcntl.h>
 #include "managelogs.h"
 
 static FILE * log;
 
 int crealog(char * progname){
 
+
 	progname = basename(strdup(progname));
-	    if(log != NULL){
-        return 1;														//se il log esiste aprilo
+	  if(log != NULL){
+       return 1;														//se il log esiste aprilo
     }
 	int size = strlen(progname);
 	char * file_to_open = malloc(strlen(PATH) + size + 1);
@@ -45,6 +50,7 @@ int crealog(char * progname){
 	{
 		return 1;
 	}
+
     free(file_to_open);
 	return 0;
 }

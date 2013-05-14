@@ -331,8 +331,8 @@ void read_words (FILE *f) {
 		}
 		else if (strcmp(x, "%LIST%")==0 && listTrovata)
 		{
-			long position;
-			position = ftell(f);
+			//long position;
+			//position = ftell(f);
 			//printf("trovato il secondo \n");
 			//printf("LIST trovato alla posizione %ld", position);
 			fseek(f, 0, SEEK_END);
@@ -352,7 +352,7 @@ void read_words (FILE *f) {
 void read_dirs (FILE *f) {
     char x[8192];
 	bool dirsTrovata = false;
-	long position;
+	//long position;
 	mode_t mode;
 	mode = (S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	
@@ -360,7 +360,7 @@ void read_dirs (FILE *f) {
 		if(strcmp(x, DIRS)==0 && dirsTrovata==false)
 		{
 			dirsTrovata= true;
-			position = ftell(f);
+			//position = ftell(f);
 			//puts("trovato il primo \n");
 			//printf("DIRS trovato alla posizione %ld", position);
 			continue;
@@ -368,7 +368,7 @@ void read_dirs (FILE *f) {
 		else if (strcmp(x, DIRS)==0 && dirsTrovata)
 		{
 			
-			position = ftell(f);
+			//position = ftell(f);
 			//printf("trovato il secondo \n");
 			//printf("DIRS trovato alla posizione %ld", position);
 			fseek(f, 0, SEEK_END);
@@ -401,8 +401,8 @@ void read_dirs (FILE *f) {
 			}
 			else if (strcmp(x, "%LIST%")==0 && listTrovata)
 			{
-				long position;
-				position = ftell(f);
+				//long position;
+				//position = ftell(f);
 				//printf("trovato il secondo \n");
 				//printf("LIST trovato alla posizione %ld", position);
 				fseek(f, 0, SEEK_END);

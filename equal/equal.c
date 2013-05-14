@@ -122,14 +122,14 @@ int main( int argc, char *argv[]) {
 
 			}else if (secondIsFile)
 			{
-				char** percorso;
-				*percorso = percsecond;
+				//char** percorso;
+				//*percorso = percsecond;
 				//result = confronta(percorso,percorsiFST);
 
 			}else if (firstIsFile)
 			{
-				char** percorso;
-				*percorso = percfirst;
+				//char** percorso;
+				//*percorso = percfirst;
 				//result = confronta(percorso,percorsiSND);
 			
 			}else //sono tutte e due cartelle
