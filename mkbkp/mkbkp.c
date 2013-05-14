@@ -141,7 +141,7 @@ char * collegaSlash(char * a, char * b)									//collega due stringhe inserendo
 	strcat(targetdir,"/");													// aggiungo il carattere / (slash)
 	strcat(targetdir,b);													//copio anche b nella stringa, concatenandolo			
 	
-	printf("%s \n", targetdir);	
+	//printf("%s \n", targetdir);	
 	return targetdir;														// e il nuovo percorso è fatto
 }
 
@@ -219,7 +219,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 		else 
 		{
 			lung = strlen(param[i-1]);										// se è una cartella
-			puts("thisis A FOLDER");							//
+			//puts("thisis A FOLDER");							//
 			ftw(param[i-1], list, 1);										//scorrila tutta	
 		}
 		fprintf(arch, "%s", " ");
@@ -279,7 +279,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 		else 
 		{
 			lung = strlen(param[i-1])+1;
-			puts("this... is.. A FOLDEEEEEEEEEER");
+			//puts("this... is.. A FOLDEEEEEEEEEER");
 			ftw(param[i-1], listC, 1);
 		}
 		
@@ -301,24 +301,24 @@ void read_words (FILE *f) {
 		if(strcmp(x, "%LIST%")==0 && listTrovata==false)
 		{
 			listTrovata= true;
-			puts("trovato il primo \n");
+			//puts("trovato il primo \n");
 			continue;
 		}
 		else if (strcmp(x, "%LIST%")==0 && listTrovata)
 		{
 			long position;
 			position = ftell(f);
-			printf("trovato il secondo \n");
-			printf("LIST trovato alla posizione %ld", position);
+			//printf("trovato il secondo \n");
+			//printf("LIST trovato alla posizione %ld", position);
 			fseek(f, 0, SEEK_END);
 			continue;
 		}
 		else if (listTrovata)
 		{
-        puts(x);
+        //puts(x);
 		}
     }
-	printf("esco \n");
+	//printf("esco \n");
 	
 }										// lista i file contenuti nella sezione %LIST%
 
@@ -335,16 +335,16 @@ void read_dirs (FILE *f) {
 		{
 			dirsTrovata= true;
 			position = ftell(f);
-			puts("trovato il primo \n");
-			printf("DIRS trovato alla posizione %ld", position);
+			//puts("trovato il primo \n");
+			//printf("DIRS trovato alla posizione %ld", position);
 			continue;
 		}
 		else if (strcmp(x, DIRS)==0 && dirsTrovata)
 		{
 			
 			position = ftell(f);
-			printf("trovato il secondo \n");
-			printf("DIRS trovato alla posizione %ld", position);
+			//printf("trovato il secondo \n");
+			//printf("DIRS trovato alla posizione %ld", position);
 			fseek(f, 0, SEEK_END);
 			continue;
 		}
@@ -356,7 +356,7 @@ void read_dirs (FILE *f) {
 
 		}
     }
-	printf("esco \n");
+	//printf("esco \n");
 	
 }										// legge la sezione %DIRS% dell'archivio
 
@@ -370,15 +370,15 @@ void read_dirs (FILE *f) {
 			if(strcmp(x, "%LIST%")==0 && listTrovata==false)
 			{
 				listTrovata= true;
-				puts("trovato il primo \n");
+				//puts("trovato il primo \n");
 				continue;
 			}
 			else if (strcmp(x, "%LIST%")==0 && listTrovata)
 			{
 				long position;
 				position = ftell(f);
-				printf("trovato il secondo \n");
-				printf("LIST trovato alla posizione %ld", position);
+				//printf("trovato il secondo \n");
+				//printf("LIST trovato alla posizione %ld", position);
 				fseek(f, 0, SEEK_END);
 				break;
 			}
@@ -388,14 +388,14 @@ void read_dirs (FILE *f) {
 				char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
 				file = collega(getcwd(NULL, 0), x);
 				creat(file, PERMS);
-				printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
+				//printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
 				trovaInizioFine(contatore);
-				printf("ora scrivo il file trovato");
+				//printf("ora scrivo il file trovato");
 				scriviFile(file);
 				//inserisco funzione che parte da inizio e scrive carattere per carattere nel file destinazione. se la posizione di ftell è uguale a fine, allora esci.
 			}
 		}
-		printf("esco \n");
+		//printf("esco \n");
 	}
 
 	void trovaInizioFine(int cont)										// trova il carattere di inizio e di fine del file nella sezione %CONTENT%
@@ -412,17 +412,17 @@ void read_dirs (FILE *f) {
 			if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)-1) )
 			{
 				inizio = ftell(contenuto);
-				puts("trovato il primo \n");
+				//puts("trovato il primo \n");
 				//puts(x);
-				printf("CONTENT trovato alla posizione %d \n", inizio);
+				//printf("CONTENT trovato alla posizione %d \n", inizio);
 				i++;
 			}
 			else if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)) )
 			{
 				fine = ftell(contenuto);
 				daleggere = fine-9;
-				puts("trovato il primo \n");
-				printf("CONTENT trovato alla posizione %d \n", fine);
+				//puts("trovato il primo \n");
+				//printf("CONTENT trovato alla posizione %d \n", fine);
 				break;
 				i++;
 			}
@@ -432,10 +432,10 @@ void read_dirs (FILE *f) {
 			}
 
 
-			printf("giro numero %d \n", i);
+			//printf("giro numero %d \n", i);
 		}
 		
-		printf("esco da trova Inizio File  \n");
+		//printf("esco da trova Inizio File  \n");
 		fclose(contenuto);
 		
 	}
@@ -484,13 +484,13 @@ int list(const char *name, const struct stat *status, int type) {
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung,"/.DS_Store")!=0)
 	{
-		printf("0%3o\t%s\n", status->st_mode&0777, name);
+		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 	}
 	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
 	{
-		printf("0%3o\t%s\n", status->st_mode&0777, name);
+		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 		fprintf(arch, "%s  ", name + lung);
-		printf( "%s ", name + lung);
+		//printf( "%s ", name + lung);
 	}	
 	
 	return 0;
@@ -504,13 +504,13 @@ int listC(const char *name, const struct stat *status, int type) {
 		return 0;
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp(name + lung,".DS_Store")!=0)
-		printf("0%3o\t%s/\n", status->st_mode&0777, name);
+		//printf("0%3o\t%s/\n", status->st_mode&0777, name);
 	
 	if(type == FTW_F && strcmp(name + lung,".DS_Store")!=0)
 	{
 		fprintf(arch, "%s", CONTENT);
 		fprintf(arch, "%s", " ");
-		printf("0%3o\t%s\n", status->st_mode&0777, name);
+		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 		writeByChar(name, arch);
 		fprintf(arch, "%s", " ");
 		fprintf(arch, "%s", CONTENT);
@@ -532,11 +532,11 @@ int listD(const char *name, const struct stat *status, int type) {
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung, ".DS_Store")!=0)
 	{
-		puts("entrato");
-		printf("0%3o\t%s\n", status->st_mode&0777, name);
+		//puts("entrato");
+		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 		fprintf(arch, "%s ", name + lung);
-		puts("fatto");
-		printf( "%s ", name + lung);
+		//puts("fatto");
+		//printf( "%s ", name + lung);
 	}
 	puts("uscito");
 	
