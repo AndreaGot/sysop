@@ -107,7 +107,7 @@ void leggiPidStat(int index, double *array)
 	else
 	{
 	pid = fopen(perc, "r");
-	fscanf(pid, "%*d %*s %*s %*d %*d %*d %*d %*d %*f %*f %*f %*d %*d %*f %*f %lf %lf", &cpu[0], &cpu[1]); //prendo solo il 16mo e il 17mo campo (user cpu e kernel cpu, children compresi)
+	fscanf(pid, "%*d %*s %*s %*d %*d %*d %*d %*d %*f %*f %*f %*d %*d %lf %lf", &cpu[0], &cpu[1]); //prendo solo il 16mo e il 17mo campo (user cpu e kernel cpu, children compresi)
 	
 	cpusum = cpu[0] + cpu[1];
 	fclose(pid);
