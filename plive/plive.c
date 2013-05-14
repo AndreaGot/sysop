@@ -132,7 +132,7 @@ void leggiPidStat(int index, double *array)
 	char * perc;
 	perc = malloc(16);								//alloca 16 caratteri ("/proc" + pid + "/stat")
 	
-	sprintf(perc, "/proc/%d/stat\0", processi[index]);	//scrive su path il percorso del file (usata altrimenti non riuscivo a convertire un int e.g. "3457" in stringa
+	sprintf(perc, "/proc/%d/stat", processi[index]);	//scrive su path il percorso del file (usata altrimenti non riuscivo a convertire un int e.g. "3457" in stringa
 	
 	if(access(perc, F_OK)==-1)
 	{

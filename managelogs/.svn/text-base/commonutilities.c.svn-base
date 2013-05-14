@@ -1,0 +1,76 @@
+/*
+ *
+ *Autore: Pellizzari Antonella n°matricola 129996
+ *
+ */
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <stdarg.h>
+#include <libgen.h>
+#include "commonutilities.h"
+
+static FILE * stream;
+
+int initlog(char * progname){
+
+	progname = basename(strdup(progname));
+	//fist of all we need to check if we have already opened a file
+	//if so, return an error, otherwise, just open it
+    if(stream != NULL){
+        return 1;
+    }
+	int size = strlen(progname);
+	char * file_to_open = malloc(strlen(PATH) + size + 1);
+	strcpy(file_to_open, PATH);
+	strcat(file_to_open, progname);
+
+    FILE * tmp = fopen(file_to_open, "r");
+    if(tmp == NULL){
+        fprintf(stderr,"Il file %s non esiste, lo creo \n",file_to_open);
+    }else{
+        fclose(tmp);
+    }
+
+	//here we shoul open the file in file_to_open
+	//so:
+	stream = fopen(file_to_open, "a");
+	if (stream == NULL){
+		//if we get here, some problem occurred opening the file... see
+		//errno for more info
+		return 1;
+	}
+    free(file_to_open);
+	return 0;
+}
+
+int mylog(char * format, ...){
+    va_list arg_list;
+    va_start(arg_list, format);
+	//maybe improve the function prototype to be something like printf...
+    if(stream == NULL){
+        return 1;
+    }
+   // vprintf(format, arg_list);
+    vfprintf(stream, format, arg_list);
+    va_end(arg_list);
+return 0;
+}
+
+int deinitlog(){
+    if(stream == NULL){
+        return 1;
+    }
+
+	//here we should close the file opened before...
+	int out = fclose(stream);
+	if (out != 0){
+		//some error have occurred, so we need to see errno for 
+		//more infos
+		return 1;
+	}
+
+	return 0;
+}
+

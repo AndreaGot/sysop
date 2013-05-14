@@ -285,6 +285,8 @@ bool compareFile(char * primo, char* secondo)
         fclose ( fileSND );
        }
 	
+	return true;
+	
 }
 
 

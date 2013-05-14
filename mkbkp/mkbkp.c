@@ -19,7 +19,10 @@
 #include <dirent.h>
 #include <ftw.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
 #include "mkbkp.h"
+#include "../managelogs/managelogs.h"
 
 #define PERMS 0666
 #define LIST "%LIST%"
@@ -44,6 +47,7 @@ int daleggere;
 
 int main(int argc, char * argv[])
 {
+	crealog(argv[0]);
 	int i;
 	int opt = 0;
 	bool f = false;													// Setto tutte le variabili a false
@@ -85,6 +89,18 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 
 	}
 	
+	if(opt == 2 && argc == 3 && (x==true||t==true))
+	{
+		printf("Mancano parametri. Inserisci il nome dell'archivio\n");
+		scrivilog("Mancano parametri. Inserisci il nome dell'archivio\n"); 
+		exit(1);
+	}
+	else if(opt == 2 && argc == 3 && c==true)
+	{
+		printf("Mancano parametri. Inserisci il nome dell'archivio e almeno un percorso valido.\n");
+		scrivilog("Mancano parametri. Inserisci il nome dell'archivio e almeno un percorso valido.\n");
+		exit(1);
+	}
 	
 
 	
@@ -93,7 +109,8 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 	
 	if(opt>2)
 	{
-		printf("You have inserted %d parameters. Maximum is 2", opt);		//se opt>2 significa che sono state inserite troppe opzioni
+		printf("troppi parametri inseriti. Ne sono stati inseriti %d, il massimo è 2", opt);	//se opt>2 significa che sono state inserite troppe opzioni
+		scrivilog("troppi parametri inseriti. Ne sono stati inseriti %d, il massimo è 2", opt);
 		exit(1);
 	}
 	else 
@@ -101,18 +118,22 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 		if(f == false)														// se manca f non si può fare nulla (il nome dell'archivio è fondamentale)
 		{
 			printf("Non posso operare se non ho il nome dell'archivio.");
+			scrivilog("Non posso operare se non ho il nome dell'archivio.");
 			exit(1);
 		}
 		if(f== true)														// se c'è f....			
 		{																	//
 			if(c == true)													// ...e c...	
 			{																//
-				printf("creo un archivio con gli attributi dati \n \n");			// ...creo l'archivio...
+				printf("creo un archivio con gli attributi dati \n \n");	// ...creo l'archivio...
+				scrivilog("creo un archivio con gli attributi dati \n \n");
 				creabkp(globalargc, globalargv, opt);						//					
 			}																// se al posto di c c'è x...
 			if(x == true)													//
 			{																//
+				
 				printf("estraggo archivio \n");								// ...estraggo..
+				scrivilog("estraggo archivio \n");	
 				nome = argv[opt+1];
 				estrai();
 			}																//
@@ -126,7 +147,7 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 		}
 	}
 
-	
+	chiudilog();
 	return 0;
 		
 }
@@ -170,6 +191,7 @@ void writeByChar (const char *filename, FILE *out) {							//scrive il contenuto
         fclose(file);														//chiudo il file
     } else {
         fprintf(out, "%s: failed to open file '%s' (%d)\n", __func__, filename, errno);
+		scrivilog("%s: failed to open file '%s' (%d)\n", __func__, filename, errno);
     }
     //fprintf(out, "%s(%s) END\n", __func__, filename);
 }				//copia un file lettera per lettera
@@ -212,7 +234,8 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 		{																	// Allora è un file
 			copy = strdup(param[i-1]);										// copio in una stringa il parametro di argv
 			filename = basename(param[i-1]);								// estraggo il nome dal percorso
-			puts(filename);													//
+			puts(filename);	
+			scrivilog("%s \n",filename);	
 			fprintf(arch, "/%s", filename);									// e lo stampo nel file
 			
 		}
@@ -293,6 +316,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	//-------------------------------------------------------FINE CONTENT-----------------------------------------------------------------------
 	fclose(arch);
 	puts("creazione terminata!\n");
+	scrivilog("creazione terminata!\n");
 }
 
 void read_words (FILE *f) {
@@ -317,6 +341,7 @@ void read_words (FILE *f) {
 		else if (listTrovata)
 		{
         puts(x);
+			scrivilog("%s\n", x);
 		}
     }
 	//printf("esco \n");
@@ -446,8 +471,6 @@ void read_dirs (FILE *f) {
 		FILE * partenza;
 		FILE * target;
 		int c;
-		int spazio = 'a';
-		int i = 0;
 		int pos;
 		char * path;
 		path = collegaSlash(getcwd(NULL, 0), nome);
@@ -472,6 +495,7 @@ void read_dirs (FILE *f) {
 		else 
 		{
 			printf("errore di scrittura del file \n");
+			scrivilog("errore di scrittura del file \n");
 		}
 		
 	}
@@ -492,6 +516,7 @@ int list(const char *name, const struct stat *status, int type) {
 		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 		fprintf(arch, "%s  ", name + lung);
 		printf( "archivio file \t%s \n", name + lung);
+		scrivilog( "archivio file \t%s \n", name + lung);
 	}	
 	
 	return 0;
@@ -554,6 +579,7 @@ void stampa()															// stampa la sezione %LIST% dell'archivio
     if(access(daListare, F_OK)==-1)
 	{
 		puts("Il file che si vuole listare non esiste");
+		scrivilog("Il file che si vuole listare non esiste");
 		exit(1);
 	}
 	
@@ -561,6 +587,7 @@ void stampa()															// stampa la sezione %LIST% dell'archivio
 	read_words(archivio);										// legge il file parola per parola
 	fclose(archivio);
 	puts("\nlettura terminata!");
+	scrivilog("\nlettura terminata!");
 }
 
 void estrai()															// estrae i dati dall'archivio
@@ -571,6 +598,7 @@ void estrai()															// estrae i dati dall'archivio
     if(access(daEstrarre, F_OK)==-1)
 	{
 		puts("Il file da estrarre non esiste");
+		scrivilog("Il file da estrarre non esiste");
 		exit(1);
 	}
 	archivio = fopen(daEstrarre, "rb");								// apre il file di archivio in modalità solo lettura
@@ -580,6 +608,7 @@ void estrai()															// estrae i dati dall'archivio
 	
 	fclose(archivio);
 	puts("estrazione terminata!");
+	scrivilog("estrazione terminata!");
 }
 
 void usage()															// come utilizzare il programma
