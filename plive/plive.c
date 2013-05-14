@@ -30,7 +30,6 @@ double *cpuinizio;
 double *cpufine;
 int dormi = 1;
 int size = 0;
-				char * wpath;
 				char * wexec;
 				int wparent;
 				FILE * wproc;
@@ -211,7 +210,57 @@ void quickSort(double *array, int array_size) //chiamata a quicksort
   q_sort(array, 0, array_size - 1);
 }
 
+char * trovaNome(int pid)
+{
+	char * perc;
+	char * nome = NULL;
+	perc = malloc(16);								//alloca 16 caratteri ("/proc" + pid + "/stat")
+	FILE * proc;
+	
+	sprintf(perc, "/proc/%d/stat", pid);
+	puts(perc);
+	
+	if(access(perc, F_OK)==-1)
+	{
+	nome = NULL;
+	}
+	else
+	{
+	proc = fopen(perc, "rb");
+	fscanf(proc, "%*d (%s)", nome); 
+	fclose(proc);
+	
+	return nome;
+	}			
+	
+	return NULL;			
+	
+}
 
+int trovaPadre(int pid)
+{
+	char * perc;
+	int padre = 0;
+	perc = malloc(16);							//alloca 16 caratteri ("/proc" + pid + "/stat")
+	FILE * proc;
+	
+	sprintf(perc, "/proc/%d/stat", pid);
+	
+	if(access(perc, F_OK)==-1)
+	{
+	padre = 0;
+	}
+	else
+	{
+	puts("ci posso accedere");
+	proc = fopen(perc, "rb");
+	fscanf(proc, "%*d (%*s) %*s %d", &padre); 
+	fclose(proc);
+	
+	return padre;
+	}						
+	return 123;
+}
 
 int main(int argc, char* argv[])
 {
@@ -273,14 +322,10 @@ i=0;
 			
 			while(i<numeroproc)
 			{
-				wpath = malloc(17);
-				sprintf(wpath, "/proc/%d/stat\0", processi[size-1-i]);
-				wproc = fopen(wpath, "r");
-				fscanf(wproc, "%*d (%s) %*s %d", wexec, &wparent);
-				fclose(wproc);
-				free(wpath);
+				wparent = trovaPadre(processi[size-1-i]);
+				wexec = trovaNome(processi[size-1-i]);
 				
-				printf("%d \t %s \t %d \t %lf \n", processi[size-1-i],wexec, wparent,(cpufine[size-1-i]/end)*100);
+				printf("%d \t ciao \t %d \t %lf \n", processi[size-1-i], wparent,(cpufine[size-1-i]/end)*100);
 				
 				i++;
 			}
