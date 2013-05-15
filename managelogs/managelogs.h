@@ -8,7 +8,7 @@
  ============================================================================
  */
 
-#define PATH "/home/andrea/Scrivania/"
+#define PATH "/var/log/utility/"
 
 // crea il file di log (o lo apre nel caso esistesse già);
 

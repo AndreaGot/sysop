@@ -265,6 +265,7 @@ int main(int argc, char* argv[])
 {
 
 	crealog(argv[0]);
+	scrivilog("Inizia l'esecuzione del programma");
 	int i =0;
 	int j = 0;
 	int numeroproc;	
