@@ -54,9 +54,11 @@ int kbhit(void)
 	if(ch > 48 && ch < 58)
 	{
 		dormi = ch-48;
+		scrivilog("E' stato premuto un numero, setto la frequenza di aggiornamento a %d secondi", ch-48);
 	}
 	else if(ch == 81 || ch==113)
 	{
+		scrivilog("E' stato premuto il tasto 'q' o 'Q'. Esco dal programma");
 		exit(1);
 	}
 	
@@ -73,7 +75,6 @@ double CPUvalue(double * array) 					//restituisce il numero di jiffies utilizza
 	int i = 0;
 	FILE * proc;
 	proc = fopen("/proc/stat", "rb");				//apro il file /proc/stat, che contiene i parametri generali della CPU (10 valori corrispondenti a 10 diversi utilizzi)
-	printf("file opened \n");
 													//legge ogni valore dei vari settori della cpu
 	fscanf(proc, "%*s %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf", &array[0], &array[1], &array[2], &array[3], &array[4], &array[5], &array[6], &array[7], &array[8], &array[9]); 
 	fclose(proc);
@@ -213,12 +214,11 @@ void quickSort(double *array, int array_size) //chiamata a quicksort
 char * trovaNome(int pid)
 {
 	char * perc;
-	char * nome = NULL;
+	char * nome;
 	perc = malloc(16);								//alloca 16 caratteri ("/proc" + pid + "/stat")
 	FILE * proc;
 	
-	sprintf(perc, "/proc/%d/stat", pid);
-	puts(perc);
+	sprintf(perc, "/proc/%d/stat\0", pid);
 	
 	if(access(perc, F_OK)==-1)
 	{
@@ -227,7 +227,7 @@ char * trovaNome(int pid)
 	else
 	{
 	proc = fopen(perc, "rb");
-	fscanf(proc, "%*d (%s)", nome); 
+	fscanf(proc, "%*d %s", nome); 
 	fclose(proc);
 	
 	return nome;
@@ -244,7 +244,7 @@ int trovaPadre(int pid)
 	perc = malloc(16);							//alloca 16 caratteri ("/proc" + pid + "/stat")
 	FILE * proc;
 	
-	sprintf(perc, "/proc/%d/stat", pid);
+	sprintf(perc, "/proc/%d/stat\0", pid);
 	
 	if(access(perc, F_OK)==-1)
 	{
@@ -252,9 +252,8 @@ int trovaPadre(int pid)
 	}
 	else
 	{
-	puts("ci posso accedere");
-	proc = fopen(perc, "rb");
-	fscanf(proc, "%*d (%*s) %*s %d", &padre); 
+	proc = fopen(perc, "r");
+	fscanf(proc, "%*d %*s %*s %d", &padre); 
 	fclose(proc);
 	
 	return padre;
@@ -267,6 +266,7 @@ int main(int argc, char* argv[])
 
 	crealog(argv[0]);
 	int i =0;
+	int j = 0;
 	int numeroproc;	
 	numeroproc = 10;
 
@@ -319,13 +319,19 @@ i=0;
 			quickSort(cpufine, size);
 			
 			i=0;
-			
+			j=0;
+			while(j<31)
+			{		
+				printf("\n");
+				j++;
+			}
 			while(i<numeroproc)
 			{
 				wparent = trovaPadre(processi[size-1-i]);
 				wexec = trovaNome(processi[size-1-i]);
 				
-				printf("%d \t ciao \t %d \t %lf \n", processi[size-1-i], wparent,(cpufine[size-1-i]/end)*100);
+				
+				printf("%d \t %d \t %lf \t %s \n", processi[size-1-i], wparent,(cpufine[size-1-i]/end)*100, wexec);
 				
 				i++;
 			}
