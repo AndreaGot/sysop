@@ -304,6 +304,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 			lung = strlen(param[i-1])+1;
 			//puts("this... is.. A FOLDEEEEEEEEEER");
 			ftw(param[i-1], listC, 1);
+			puts("eccomi");
 		}
 		
 		fprintf(arch, "%s", "\n");
@@ -530,6 +531,7 @@ int listC(const char *name, const struct stat *status, int type) {
 		return 0;
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp(name + lung,".DS_Store")!=0)
+	{}
 		//printf("0%3o\t%s/\n", status->st_mode&0777, name);
 	
 	if(type == FTW_F && strcmp(name + lung,".DS_Store")!=0)
@@ -543,8 +545,6 @@ int listC(const char *name, const struct stat *status, int type) {
 		fprintf(arch, "\n");
 		
 	}
-	
-	
 	
 	return 0;
 }	// per FTW - lista i contenuti dei file
