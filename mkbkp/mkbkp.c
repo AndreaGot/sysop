@@ -24,7 +24,7 @@
 #include "mkbkp.h"
 #include "../managelogs/managelogs.h"
 
-#define PERMS 0666
+#define PERMS 0777
 #define LIST "%LIST%"
 #define DIRS "%DIRS%"
 #define CONTENT "%CONTENT%"
@@ -378,7 +378,7 @@ void read_dirs (FILE *f) {
 		else if(dirsTrovata)
 		{
 			char* folder;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-			folder = collega(getcwd(NULL, 0), x);
+			folder = collegaSlash(getcwd(NULL, 0), x);
 			mkdir(folder, mode);
 
 		}
@@ -413,7 +413,7 @@ void read_dirs (FILE *f) {
 			{
 				contatore++;
 				char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
-				file = collega(getcwd(NULL, 0), x);
+				file = collegaSlash(getcwd(NULL, 0), x);
 				creat(file, PERMS);
 				//printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
 				trovaInizioFine(contatore);
@@ -515,7 +515,7 @@ int list(const char *name, const struct stat *status, int type) {
 	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
 	{
 		//printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s  ", name + lung);
+		fprintf(arch, "%s ", name + lung);
 		printf( "archivio file \t%s \n", name + lung);
 		scrivilog( "archivio file \t%s \n", name + lung);
 	}	
