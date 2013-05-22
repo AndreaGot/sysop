@@ -579,14 +579,27 @@ int listC(const char *name, const struct stat *status, int type) {
 //-------------------------------------------------------INIZIO LISTD PER %DIRS%-----------------------------------------------------------------------
 
 int listD(const char *name, const struct stat *status, int type) {
+	int index = 0;
+	char * copy;
+	char * position;
+	
 	if(type == FTW_NS)
 		return 0;
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung, ".DS_Store")!=0)
 	{
-		//puts("entrato");
-		//printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s ", name + lung);
+		copy = strdup(name);
+		
+		position = strchr(copy, ' ');
+		while(position!=NULL)
+		{
+			index = position-copy;
+			copy[index] = '-';
+			position = strchr(copy, ' ');
+		}
+	
+		
+		fprintf(arch, "%s ", copy + lung);
 		//puts("fatto");
 		//printf( "%s ", name + lung);
 	}
