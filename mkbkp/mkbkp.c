@@ -225,7 +225,8 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	
 	fprintf(arch, "%s", LIST);
 	fprintf(arch, "%s", " ");
-	
+	int index = 0;
+	char * position;
 	while(i<=numpar)
 	{
 		
@@ -234,8 +235,18 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 		{																	// Allora è un file
 			copy = strdup(param[i-1]);										// copio in una stringa il parametro di argv
 			filename = basename(param[i-1]);								// estraggo il nome dal percorso
-			puts(filename);	
-			scrivilog("%s \n",filename);	
+
+			
+			position = strchr(filename, ' ');
+			while(position!=NULL)
+			{
+				index = position-filename;
+				filename[index] = '-';
+				position = strchr(filename, ' ');
+			}
+
+			printf( "archivio file \t/%s", filename);	
+			scrivilog("archivio file \t%s \n",filename);	
 			fprintf(arch, "/%s", filename);									// e lo stampo nel file
 			
 		}
@@ -505,6 +516,9 @@ void read_dirs (FILE *f) {
 //-------------------------------------------------------INIZIO LIST PER %LIST%-----------------------------------------------------------------------
 
 int list(const char *name, const struct stat *status, int type) {
+	int index = 0;
+	char * copy;
+	char * position;
 	if(type == FTW_NS)
 		return 0;
 	
@@ -515,9 +529,20 @@ int list(const char *name, const struct stat *status, int type) {
 	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
 	{
 		//printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s ", name + lung);
-		printf( "archivio file \t%s \n", name + lung);
-		scrivilog( "archivio file \t%s \n", name + lung);
+		
+		copy = strdup(name);
+		
+		position = strchr(copy, ' ');
+		while(position!=NULL)
+		{
+			 index = position-copy;
+			 copy[index] = '-';
+			 position = strchr(copy, ' ');
+		 }
+	
+		fprintf(arch, "%s ", copy + lung);
+		printf( "archivio file \t%s \n", copy + lung);
+		scrivilog( "archivio file \t%s \n", copy + lung);
 	}	
 	
 	return 0;
