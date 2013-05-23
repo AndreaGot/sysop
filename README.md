@@ -7,9 +7,13 @@ Operating Systems project - Editing Linux utilities
 
 Works by archiving files or folders user passes as arguments. Function also lists and extracts files from archive.
 
+---
+
 ###equal
 
 Returns true if two folders or files passed as arguments have the same content, false otherwise.
+
+---
 
 ###plive
 
