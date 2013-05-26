@@ -10,7 +10,7 @@ bool isDIR(char * folder);
 int lunghezza;
 int lung;
 
-void comparearray(char** folder1,char**folder2);
+void compareArray(char** first,char** second, int fLun,int sLun,char* fHead, char* sHead);
 void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radice);
 char** scorripercorso(char* folder,int* n);
 int comp(const void *x, const void *y);
@@ -87,37 +87,84 @@ void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radic
 	}
 }
 
-int main()
+int main( int argc, char *argv[])
 {
 
   
     char ** percorsi; 
     char ** percorsi2;
   
-    char * inizio = malloc(sizeof(char*) * 50);
-    inizio = "/home/giulian/sysop/equal/prova";
    
+    char * first = malloc(sizeof(char*) * (sizeof(argv[1])+3));
+    first = argv[1];
+   
+    char * second = malloc(sizeof(char*) * (sizeof(argv[2])+3));
+    second = argv[2];
 
+   
+   
    // savedir(inizio,0,&percorsi,temp,num,inizio);
     
     int t = 0;
-    percorsi = scorripercorso(inizio,&t);
+    percorsi = scorripercorso(first,&t);
 
     printf("\n il primo è finito \n \n");
 
     int t2 = 0;
-    percorsi2 = scorripercorso("./",&t2);
+    percorsi2 = scorripercorso(second,&t2);
 	
     printf("done.\n");
     printf(" Ci sono %d elementi \n",t);
-
+	
+    
 
     qsort((char**)percorsi,t, sizeof(char**),comp);
     qsort((char**)percorsi2,t2,sizeof(char**),comp);
     
+    //char* prova ;
+   // int i = 0;
+   /* while(i<t2)
+	{
+	prova  = malloc(sizeof(char*) * 150);
+	strcpy(prova,first);
+	prova = strcat(prova,percorsi[i]);
+	printf("percoso[%d]=%s \n",i,prova);
+	free(prova);
+	i++;
+    	}*/
     
 
-    comparearray(percorsi,percorsi2);
+     // questa parte toglie questo simbolo '/' dalla fine del file se c'è
+     // prima verifico se ha '/' e poi tolgo
+
+   // printf(" %s \n",second);
+
+
+     char* sndPos = strrchr(second,47);
+     int pos1 = second - sndPos;
+      
+	
+     if ( (strlen(second)+pos1)==1)
+	{
+  	  printf("%s \n", second);
+	  second[pos1*(-1)] = '\0';
+	}
+    
+
+    char* fstPos = strrchr(first,47);
+    int pos = first - fstPos;
+
+  
+    if ((strlen(first)+pos)==1)
+	{
+	  printf("%s \n", first);
+	  first[pos*(-1)] = '\0';  
+	}
+
+     printf(" il primo è %p e %s \n",&first,first);
+     printf("il secondo è %p e %s \n",&second,second);
+   
+    compareArray(percorsi,percorsi2,t,t2,first,second);
 
     
 
@@ -156,6 +203,22 @@ int comp(const void *x, const void *y)
     return(strcmp(*((char**)x),*((char**)y)));      
 }
 
+void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, char* sHead)
+{
+	int i = 0;
+	int j = 0;
+
+	
+	while(i<fLun && j<sLun)
+	{
+	    if(strcmp(first[i],second[i])==0){
+		 
+
+	    }
+	j++;
+	i++;
+	}
+}
 
 bool compareFile(char * primo, char* secondo)
 {
