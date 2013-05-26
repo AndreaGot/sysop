@@ -24,7 +24,7 @@
 #include "mkbkp.h"
 #include "../managelogs/managelogs.h"
 
-#define PERMS 0666
+#define PERMS 0777
 #define LIST "%LIST%"
 #define DIRS "%DIRS%"
 #define CONTENT "%CONTENT%"
@@ -225,7 +225,8 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	
 	fprintf(arch, "%s", LIST);
 	fprintf(arch, "%s", " ");
-	
+	int index = 0;
+	char * position;
 	while(i<=numpar)
 	{
 		
@@ -234,8 +235,18 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 		{																	// Allora è un file
 			copy = strdup(param[i-1]);										// copio in una stringa il parametro di argv
 			filename = basename(param[i-1]);								// estraggo il nome dal percorso
-			puts(filename);	
-			scrivilog("%s \n",filename);	
+
+			
+			position = strchr(filename, ' ');
+			while(position!=NULL)
+			{
+				index = position-filename;
+				filename[index] = '-';
+				position = strchr(filename, ' ');
+			}
+
+			printf( "archivio file \t/%s", filename);	
+			scrivilog("archivio file \t%s \n",filename);	
 			fprintf(arch, "/%s", filename);									// e lo stampo nel file
 			
 		}
@@ -378,7 +389,7 @@ void read_dirs (FILE *f) {
 		else if(dirsTrovata)
 		{
 			char* folder;											// stringa contenente il percorso da aprire (verrà creato in seguito)
-			folder = collega(getcwd(NULL, 0), x);
+			folder = collegaSlash(getcwd(NULL, 0), x);
 			mkdir(folder, mode);
 
 		}
@@ -413,7 +424,7 @@ void read_dirs (FILE *f) {
 			{
 				contatore++;
 				char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
-				file = collega(getcwd(NULL, 0), x);
+				file = collegaSlash(getcwd(NULL, 0), x);
 				creat(file, PERMS);
 				//printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
 				trovaInizioFine(contatore);
@@ -505,6 +516,9 @@ void read_dirs (FILE *f) {
 //-------------------------------------------------------INIZIO LIST PER %LIST%-----------------------------------------------------------------------
 
 int list(const char *name, const struct stat *status, int type) {
+	int index = 0;
+	char * copy;
+	char * position;
 	if(type == FTW_NS)
 		return 0;
 	
@@ -515,9 +529,20 @@ int list(const char *name, const struct stat *status, int type) {
 	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
 	{
 		//printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s  ", name + lung);
-		printf( "archivio file \t%s \n", name + lung);
-		scrivilog( "archivio file \t%s \n", name + lung);
+		
+		copy = strdup(name);
+		
+		position = strchr(copy, ' ');
+		while(position!=NULL)
+		{
+			 index = position-copy;
+			 copy[index] = '-';
+			 position = strchr(copy, ' ');
+		 }
+	
+		fprintf(arch, "%s ", copy + lung);
+		printf( "archivio file \t%s \n", copy + lung);
+		scrivilog( "archivio file \t%s \n", copy + lung);
 	}	
 	
 	return 0;
@@ -554,14 +579,27 @@ int listC(const char *name, const struct stat *status, int type) {
 //-------------------------------------------------------INIZIO LISTD PER %DIRS%-----------------------------------------------------------------------
 
 int listD(const char *name, const struct stat *status, int type) {
+	int index = 0;
+	char * copy;
+	char * position;
+	
 	if(type == FTW_NS)
 		return 0;
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung, ".DS_Store")!=0)
 	{
-		//puts("entrato");
-		//printf("0%3o\t%s\n", status->st_mode&0777, name);
-		fprintf(arch, "%s ", name + lung);
+		copy = strdup(name);
+		
+		position = strchr(copy, ' ');
+		while(position!=NULL)
+		{
+			index = position-copy;
+			copy[index] = '-';
+			position = strchr(copy, ' ');
+		}
+	
+		
+		fprintf(arch, "%s ", copy + lung);
 		//puts("fatto");
 		//printf( "%s ", name + lung);
 	}
