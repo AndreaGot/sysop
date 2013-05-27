@@ -10,6 +10,7 @@ bool isDIR(char * folder);
 int lunghezza;
 int lung;
 
+bool compareFile(char * primo, char* secondo);
 void compareArray(char** first,char** second, int fLun,int sLun,char* fHead, char* sHead);
 void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radice);
 char** scorripercorso(char* folder,int* n);
@@ -70,7 +71,7 @@ void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radic
 		*percorsi =  realloc((*percorsi),sizeof(char**) * (*n));
 		}
 	    
-	    printf("%*s%s \n",depth,"",(*percorsi)[(*i)-1]);
+	   // printf("%*s%s \n",depth,"",(*percorsi)[(*i)-1]);
             /* Recurse at a new indent level */
 
 	    if (isDIR(new_folder1)){
@@ -94,7 +95,41 @@ int main( int argc, char *argv[])
     char ** percorsi; 
     char ** percorsi2;
   
-   
+   if ( argc != 3 ) /* argc should be 3 for correct execution */
+	    {
+	        /* We print argv[0] assuming it is the program name */
+	        printf( "Manca almeno un argomento \n", argv[0] );
+			exit(0);
+	    }
+
+   if( !(isDIR(argv[1])) && !(isDIR(argv[2])) ){
+
+		//------------- sono 2 file ----------------
+	
+		if (compareFile(argv[1],argv[2]) )
+		{
+			printf("true \n");
+			exit(0);
+		}else{
+			printf("false \n");
+			exit(0);
+		}
+
+	}else{
+		
+		// ------- il primo è una cartella e il secondo è un file
+		 if( (isDIR(argv[1])) && !(isDIR(argv[2])) )
+		{
+			printf("false \n");
+			exit(0);
+			// ----------------- il primo è un file e il secondo è una cartella
+		}else if( !(isDIR(argv[1])) && (isDIR(argv[2])) )
+		{
+			printf("false \n");
+			exit(0);
+		}
+	}
+
     char * first = malloc(sizeof(char*) * (sizeof(argv[1])+3));
     first = argv[1];
    
@@ -105,65 +140,44 @@ int main( int argc, char *argv[])
    
    // savedir(inizio,0,&percorsi,temp,num,inizio);
     
-    int t = 0;
+    int t = 0;//scorro il percorso e lo salvo nell'array percorsi
     percorsi = scorripercorso(first,&t);
 
-    printf("\n il primo è finito \n \n");
+   // printf("\n il primo è finito \n \n");
 
-    int t2 = 0;
+    int t2 = 0;//scorro il percorso e lo salvo nell'array percorsi2
     percorsi2 = scorripercorso(second,&t2);
 	
-    printf("done.\n");
-    printf(" Ci sono %d elementi \n",t);
-	
-    
+   
 
     qsort((char**)percorsi,t, sizeof(char**),comp);
     qsort((char**)percorsi2,t2,sizeof(char**),comp);
-    
-    //char* prova ;
-   // int i = 0;
-   /* while(i<t2)
-	{
-	prova  = malloc(sizeof(char*) * 150);
-	strcpy(prova,first);
-	prova = strcat(prova,percorsi[i]);
-	printf("percoso[%d]=%s \n",i,prova);
-	free(prova);
-	i++;
-    	}*/
-    
 
-     // questa parte toglie questo simbolo '/' dalla fine del file se c'è
-     // prima verifico se ha '/' e poi tolgo
-
-   // printf(" %s \n",second);
-
+     /* qui controllo se c'è il simbolo '/' alla fine del secondo elemento, se c'è
+        lo tolgo*/
 
      char* sndPos = strrchr(second,47);
      int pos1 = second - sndPos;
       
-	
      if ( (strlen(second)+pos1)==1)
 	{
-  	  printf("%s \n", second);
+  	  
 	  second[pos1*(-1)] = '\0';
 	}
-    
-
-    char* fstPos = strrchr(first,47);
+    /*
+		Qui faccio la stessa cosa di sopra...
+	*/    
+	char* fstPos = strrchr(first,47);
     int pos = first - fstPos;
 
   
     if ((strlen(first)+pos)==1)
 	{
-	  printf("%s \n", first);
+	
 	  first[pos*(-1)] = '\0';  
 	}
 
-     printf(" il primo è %p e %s \n",&first,first);
-     printf("il secondo è %p e %s \n",&second,second);
-   
+    //qui confronto i 2 array
     compareArray(percorsi,percorsi2,t,t2,first,second);
 
     
@@ -181,7 +195,7 @@ char** scorripercorso(char* folder,int* n)
     strcpy(inizio,folder);
     *temp = 0;
 
-    printf("Directory scan %s:\n",inizio);
+    //printf("Directory scan %s:\n",inizio);
     savedir(inizio,0,&percorsi,temp,num,inizio);
 
     (*n) = (*temp);
@@ -207,17 +221,149 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 {
 	int i = 0;
 	int j = 0;
-
+	bool sonouguali = true;
+	int res = 0;
+	int res2 = 0;
+	int appoggio = 0;
+	char* ultimodiverso = malloc ( sizeof(char*) * 200);
+	strcpy(ultimodiverso," ");
 	
 	while(i<fLun && j<sLun)
 	{
-	    if(strcmp(first[i],second[i])==0){
-		 
+            res = strcmp(first[i],second[j]);
+	    if(res == 0){
+		  char * primo = malloc( sizeof(char**) * (strlen(first[i]) + strlen(fHead) +2) ) ;
+		  char * secondo = malloc( sizeof(char**) * (strlen(second[j]) + strlen(sHead) +2) ) ;
+		  
+		  strcpy(primo, fHead);
+          	strcat(primo, first[i]);
+		  
+		  strcpy(secondo, sHead);
+		  strcat(secondo, second[j]);
 
-	    }
-	j++;
-	i++;
+		//  printf(" %s %s \n",primo,secondo); 
+
+		  if ( isDIR(primo) && isDIR(secondo) ){
+		
+		  }else{
+		    
+                 
+
+			if ( compareFile(primo,secondo) ){
+		    		//printf("%s = %s \n",first[i],second[j]);
+			}else
+			{
+				sonouguali = false;
+				printf("%s è diverso da %s \n",first[i],second[j]);
+			}
+		   }
+
+		   i++;
+		   j++;			
+	    }else if (res < 0)
+		{
+		sonouguali = false;
+		
+		i++;
+		// questo controllo serve ad evitare di scrivere tutti i sottopercorsi
+		// in caso ci siano cartelle 
+
+		if (ultimodiverso == " "){
+			printf("<< %s \n",first[i-1]);
+			strcpy(ultimodiverso,first[i-1]);
+		    
+			}
+		else
+ 		   {
+			if ( strncmp(first[i-1],ultimodiverso, strlen(ultimodiverso)) != 0)
+				{
+				strcpy(ultimodiverso,first[i-1]);
+			    	printf("<< %s \n",first[i-1]);
+
+				}
+			}
+
+		
+		}
+		else
+		{
+		sonouguali = false;
+
+	
+		j++;
+		// questo controllo serve ad evitare di scrivere tutti i sottopercorsi
+		// in caso ci siano cartelle 
+			if (ultimodiverso == NULL){
+				printf(">> %s \n",second[j-1]);
+				strcpy(ultimodiverso,second[j-1]);
+		    
+				}
+			else
+ 		   	{
+				if ( strncmp(second[j-1],ultimodiverso, strlen(ultimodiverso)) != 0)
+					{
+					strcpy(ultimodiverso,second[j-1]);
+			   		printf(">> %s \n",second[j-1]);
+
+					}	
+			}
+
+		}
+
 	}
+
+	// in questo punto controllo se ci sono elementi che non ho guardato perchè il ciclo si è concluso prima
+	if ( i<fLun){
+		sonouguali = false;
+
+		while(i<fLun){	
+		i++;
+		   if (ultimodiverso == NULL){
+				printf("<< %s \n",first[i-1]);
+				strcpy(ultimodiverso,first[i-1]);
+		    
+				}
+			else
+ 		   	{
+				if ( strncmp(first[i-1],ultimodiverso, strlen(ultimodiverso)) == 0)
+					continue;
+				else{
+					strcpy(ultimodiverso,first[i-1]);
+			   		printf("<< %s \n",first[i-1]);
+
+					}	
+			}
+
+
+		}
+	}
+
+	// in questo punto controllo se ci sono elementi che non ho guardato perchè il ciclo si è concluso prima
+	if (j <sLun){
+		sonouguali = false;
+		while(i<sLun){	
+		j++;
+	
+		if (ultimodiverso == NULL){
+				printf(">> %s \n",second[j-1]);
+				strcpy(ultimodiverso,second[j-1]);
+				}
+		else
+ 		   	{
+				if ( strncmp(second[j-1],ultimodiverso, strlen(ultimodiverso)) == 0)
+					continue;
+				else{
+					strcpy(ultimodiverso,second[j-1]);
+			   		printf(">> %s \n",second[j-1]);
+
+					}	
+			}
+		}
+	}
+
+
+	if(sonouguali)
+		printf("true \n");
 }
 
 bool compareFile(char * primo, char* secondo)
@@ -243,12 +389,16 @@ bool compareFile(char * primo, char* secondo)
        		char ch1  =  getc( fileFST ) ;
        		char ch2  =  getc( fileSND ) ;
 
+       int i = 0;
        while( (ch1!=EOF) && (ch2!=EOF) && (uguali==true))
         {
             ch1 = getc(fileFST);
             ch2 = getc(fileSND) ;
 	    if(ch1!=ch2)
+	     {
 		uguali = false;
+		i++;
+             }
         }
 
         if (uguali)
