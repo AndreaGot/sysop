@@ -33,16 +33,16 @@ int size = 0;
 				char * wexec;
 				int wparent;
 				FILE * wproc;
-int kbhit(void)
-{
+int kbhit(void) //questa funzione modifica le proprietà del terminale in modo da fargli accettare i caratteri inseriti. Alla fine della routine controlal se i caratteri corrispondono a un dato pattern, e ripristina il settaggio del terminale
+{		//serve per non inserire in un buffer l'input
 	struct termios oldt, newt;
 	int ch;
 	int oldf;
 	
 	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;
-	newt.c_lflag &= ~(ICANON | ECHO);
-	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+	newt.c_lflag &= ~(ICANON | ECHO); //
+	tcsetattr(STDIN_FILENO, TCSANOW, &newt); //cambia immediatamente la configurazione
 	oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
 	fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
 	
@@ -51,12 +51,12 @@ int kbhit(void)
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 	fcntl(STDIN_FILENO, F_SETFL, oldf);
 	
-	if(ch > 48 && ch < 58)
+	if(ch > 48 && ch < 58) //se il carattere inserito e'compreso tra 0 e 9
 	{
 		dormi = ch-48;
 		scrivilog("E' stato premuto un numero, setto la frequenza di aggiornamento a %d secondi \n", ch-48);
 	}
-	else if(ch == 81 || ch==113)
+	else if(ch == 81 || ch==113) // se il carattere inserito e' q o Q
 	{
 		scrivilog("E' stato premuto il tasto 'q' o 'Q'. Esco dal programma \n");
 		exit(1);
