@@ -1,3 +1,14 @@
+/*
+ ============================================================================
+ Academic Year : 2012-2013
+ Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
+ Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
+ Name          : equal.c
+ Description   : Ritorna true se gli oggetti passati come parametro sono uguali, false altrimenti 
+ ============================================================================
+ */
+
+
 #include <unistd.h>
 #include <stdio.h>
 #include <dirent.h>
