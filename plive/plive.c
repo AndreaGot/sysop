@@ -54,11 +54,11 @@ int kbhit(void)
 	if(ch > 48 && ch < 58)
 	{
 		dormi = ch-48;
-		scrivilog("E' stato premuto un numero, setto la frequenza di aggiornamento a %d secondi", ch-48);
+		scrivilog("E' stato premuto un numero, setto la frequenza di aggiornamento a %d secondi \n", ch-48);
 	}
 	else if(ch == 81 || ch==113)
 	{
-		scrivilog("E' stato premuto il tasto 'q' o 'Q'. Esco dal programma");
+		scrivilog("E' stato premuto il tasto 'q' o 'Q'. Esco dal programma \n");
 		exit(1);
 	}
 	
@@ -265,7 +265,7 @@ int main(int argc, char* argv[])
 {
 
 	crealog(argv[0]);
-	scrivilog("Inizia l'esecuzione del programma");
+	scrivilog("Inizia l'esecuzione del programma \n");
 	int i =0;
 	int j = 0;
 	int numeroproc;	
