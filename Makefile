@@ -1,4 +1,3 @@
-
 # ============================================================================
 # Academic Year : 2012-2013
 # Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
@@ -17,7 +16,7 @@ all: create_dir mkbkp equal plive
 
 create_dir:
 	mkdir -p files
-	#mkdir -p /var/log/utility # remove first # in order to make mkdir work
+	mkdir -p /var/log/utility # remove first # in order to make mkdir work
 
 managelogs.o: 
 	$(CC) $(CFLAGS) -c managelogs/managelogs.c -o managelogs/managelogs.o
