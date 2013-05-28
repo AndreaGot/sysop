@@ -16,19 +16,22 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <"../managelogs/managelogs.h">
+#include "../managelogs/managelogs.h"
+#include "equal.h"
 
-bool isDIR(char * folder);
+
 int lunghezza;
-int lung;s
+int lung;
 
-bool compareFile(char * primo, char* secondo);
-void compareArray(char** first,char** second, int fLun,int sLun,char* fHead, char* sHead);
-void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radice);
-char** scorripercorso(char* folder,int* n);
-int comp(const void *x, const void *y);
+/*
+   Questa funzione scorre la cartella e tutte le sotto cartelle di una certa cartella @folder1.
+   Man mano che attraversa il percorso lo salva in un array @percorsi.
+   @radice serve per togliere sempre la parte iniziale che altrimenti sarebbe uguale per ogni elemento
+   @n invece serve per ingrandire l'array quando è pieno attraverso l'uso della realloc
+   @i serve prima di tutto per progredire nell'array, inoltre alla fine conterrà la dimensione dell'array
 
-void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radice)
+*/
+void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 {
 
     DIR *dir1;
@@ -40,7 +43,7 @@ void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radic
    
 	
   
-  // la prima parte del file è stata messa in quanto c'è un bug nella readdir
+
   // se si passa un NULL alla readdir va in segmentation fault
   // quindi sfrutto il fatto che C è pigro e in questo modo in caso
   // dir1 sia NULL non faccio la readdir
@@ -88,7 +91,7 @@ void savedir(char *folder1, int depth,char*** percorsi,int* i,int* n,char* radic
 
 	    if (isDIR(new_folder1)){
 		
-            savedir(new_folder1,depth+1,percorsi,i,n,radice);
+            savedir(new_folder1,percorsi,i,n,radice);
 	   
        		}
 		
@@ -111,7 +114,7 @@ int main( int argc, char *argv[])
    if ( argc != 3 ) /* argc should be 3 for correct execution */
 	    {
 	        /* We print argv[0] assuming it is the program name */
-	        printf( "Manca almeno un argomento \n", argv[0] );
+	        printf( "Manca almeno un argomento \n");
 			exit(0);
 	    }
 
@@ -199,6 +202,15 @@ int main( int argc, char *argv[])
     exit(0);
 }
 
+
+/*
+  Questa è la funzione che chiama savedir()
+  sostanzialmente inizializza le variabili e i parametri da passare alla savedir
+  inoltre restituisce l'array riempito dalla savedir().
+  @folder, contiene la cartella da scorrere
+  @n, qui verrà salvata la lunghezza dell'array, infatti in input và dato l'indirizzo della variabile che lo conterrà
+
+*/
 char** scorripercorso(char* folder,int* n)
 {
     int num [1];
@@ -209,15 +221,18 @@ char** scorripercorso(char* folder,int* n)
     strcpy(inizio,folder);
     *temp = 0;
 
-    //printf("Directory scan %s:\n",inizio);
-    savedir(inizio,0,&percorsi,temp,num,inizio);
+    
+    savedir(inizio,&percorsi,temp,num,inizio);
 
     (*n) = (*temp);
     return percorsi;
 
 }
 
-
+/*
+   Questa funzione dice se un determinato elemento è una cartella o meno
+   @folder, l'elemento che viene verificato
+*/
 bool isDIR(char * folder){
 	
 	struct stat statbuf;
@@ -226,11 +241,26 @@ bool isDIR(char * folder){
 
 }
 
+
+/*
+Questa funzione viene utilizzata per comparare le stringhe.
+E' particolarmente importante perchè è la funzione di comparazione che poi
+viene data in input alla funzione q_sort
+*/
 int comp(const void *x, const void *y)
 {
     return(strcmp(*((char**)x),*((char**)y)));      
 }
 
+/*
+Questa funzione riceve in input
+@first, è l'array di elementi(cartelle o file) associato alla prima cartella
+@second, è l'array di elementi(cartelle o file) associato alla seconda cartella
+@fLun, è la lunghezza dell'array first
+@sLun, è la lunghezza dell'array second
+@fHead, è l'intestazione che andrà aggiunta agli elementi del primo array per verificare, in caso ci siano file, se sono uguali
+@sHead, è l'intestazione che andrà aggiunta agli elementi del secondo array per verificare, in caso ci siano file, se sono uguali
+*/
 void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, char* sHead)
 {
 	int i = 0;
@@ -239,7 +269,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 	bool primavolta = true;
 	int res = 0;
 
-	char* ultimodiverso = malloc ( sizeof(char*) * 200);
+	char* ultimodiverso = malloc ( sizeof(char*) * 250);
 	strcpy(ultimodiverso," ");
 	
 	while(i<fLun && j<sLun)
@@ -290,9 +320,9 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		sonouguali = false;
 		
 		i++;
-		// questo controllo serve ad evitare di scrivere tutti i sottopercorsi
-		// in caso ci siano cartelle 
-
+		/* questo controllo serve ad evitare di scrivere tutti i sottopercorsi
+		 in caso ci siano cartelle diverse
+		*/
 		if (strcmp(ultimodiverso," ")== 0){
 			printf("<< %s \n",first[i-1]);
 			strcpy(ultimodiverso,first[i-1]);
@@ -398,11 +428,17 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 	if(sonouguali)
 		printf("true \n");
 }
-
+/*
+Questa funzione, dati 2 file, verifica se sono uguali
+ritorna true se sono uguali e false se sono diversi
+Il controllo viene fatto byte per byte
+*/
 bool compareFile(char * primo, char* secondo)
 {
 	FILE *fileFST;
 	FILE *fileSND;
+
+	//qui controllo semplicemente se i file che sto controllando sono esattamente gl stessi
 	if (strcmp(primo,secondo) == 0)
 		return true;
 
@@ -410,7 +446,10 @@ bool compareFile(char * primo, char* secondo)
 	fileFST = fopen(primo, "rb");
 	fileSND = fopen(secondo, "rb");
 	bool uguali = true;
-
+	
+	/*
+	Prima verifico se i 2 file esistono e si possono aprire
+	*/
 	if ( fileFST == NULL )
 	       {
 	       printf("Cannot open %s for reading ", primo );
@@ -423,6 +462,7 @@ bool compareFile(char * primo, char* secondo)
 		}
    	else
        	{
+		//ora inizio a confrontare i 2 file
        		char ch1  =  getc( fileFST ) ;
        		char ch2  =  getc( fileSND ) ;
 		
