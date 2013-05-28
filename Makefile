@@ -3,7 +3,7 @@
 # Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
 # Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
 # Name          : mkbkp.c
-# Description   : Archivia i file specificati, li estrae ed elenca il contenuto dell'archivio
+# Description   : Crea gli eseguibili per le utility, contenuti nella cartella /files
 # ============================================================================
 
 
