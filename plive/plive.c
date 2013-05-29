@@ -33,15 +33,19 @@ int size = 0;
 				char * wexec;
 				int wparent;
 				FILE * wproc;
-int kbhit(void) //questa funzione modifica le proprietà del terminale in modo da fargli accettare i caratteri inseriti. Alla fine della routine controlal se i caratteri corrispondono a un dato pattern, e ripristina il settaggio del terminale
-{		//serve per non inserire in un buffer l'input
+
+//questa funzione modifica le proprietà del terminale in modo da fargli accettare i caratteri inseriti. 
+//Alla fine della routine controlal se i caratteri corrispondono a un dato pattern, e ripristina il settaggio del terminale
+int kbhit(void) 
+{		
+	//serve per non inserire in un buffer l'input
 	struct termios oldt, newt;
 	int ch;
 	int oldf;
 	
 	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;
-	newt.c_lflag &= ~(ICANON | ECHO); //
+	newt.c_lflag &= ~(ICANON | ECHO); 
 	tcsetattr(STDIN_FILENO, TCSANOW, &newt); //cambia immediatamente la configurazione
 	oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
 	fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
@@ -88,16 +92,16 @@ double CPUvalue(double * array) 					//restituisce il numero di jiffies utilizza
 	return result;								
 
 }	
-
-void trovaProcessi()								// prendo la lista dei processi attivi nel momento della chiamata	
+// prendo la lista dei processi attivi nel momento della chiamata	
+void trovaProcessi()								
 {
-int i = 0;
-DIR *dir;
-struct dirent *ent;
-bool trovato = false;
+	int i = 0;
+	DIR *dir;
+	struct dirent *ent;
+	bool trovato = false;
 
-size = 0;
-if ((dir = opendir ("/proc/")) != NULL) 			//apro la cartella /proc/
+	size = 0;
+	if ((dir = opendir ("/proc/")) != NULL) 			//apro la cartella /proc/
 	{
 		while ((ent = readdir (dir)) != NULL) {		//e leggo il suo contenuto
 			if(trovato)
@@ -107,21 +111,15 @@ if ((dir = opendir ("/proc/")) != NULL) 			//apro la cartella /proc/
     			processi[size-1] = atoi(ent->d_name);
     			
     		}
-    		if(strcmp(ent->d_name, "self")==0)		//Il file "self" è l'ultimo prima dei processi, nel modo in cui li legge la readdir(), quindi da "self"+1 in poi sono tutti processi
+    		if(strcmp(ent->d_name, "self")==0)//Il file "self" è l'ultimo prima dei processi, nel modo in cui li legge la readdir(), quindi da "self"+1 in poi sono tutti processi
     			trovato = true;
   		}
   		closedir (dir);
-  		while(i<size)
-  		{
-  			//printf("%d \n", processi[i]);			//stampa i processi trovati (inutile, si può togliere)
-  			i++;
-  		}
-  		//printf("Il numero di processi è %d \n", size);
 	} 
 	else 
 	{
-  /* could not open directory */
-  	perror ("");
+		/* could not open directory */
+		perror ("");
 	}
 	
 
@@ -140,15 +138,15 @@ void leggiPidStat(int index, double *array)
 	
 	if(access(perc, F_OK)==-1)
 	{
-	cpu[0] = 0; cpu[1] = 0;
+		cpu[0] = 0; cpu[1] = 0;
 	}
 	else
 	{
-	pid = fopen(perc, "r");
-	fscanf(pid, "%*d %*s %*s %*d %*d %*d %*d %*d %*f %*f %*f %*d %*d %lf %lf", &cpu[0], &cpu[1]); //prendo solo il 16mo e il 17mo campo (user cpu e kernel cpu, children compresi)
+		pid = fopen(perc, "r");
+		fscanf(pid, "%*d %*s %*s %*d %*d %*d %*d %*d %*f %*f %*f %*d %*d %lf %lf", &cpu[0], &cpu[1]); //prendo solo il 14mo e il 15mo campo (user cpu e kernel cpu, children esclusi)
 	
-	cpusum = cpu[0] + cpu[1];
-	fclose(pid);
+		cpusum = cpu[0] + cpu[1];
+		fclose(pid);
 	}						
 	
 	array[index] = cpusum;							//scrive nell'array passato, il valore della cpu (sempre in jiffies)
@@ -222,13 +220,13 @@ char * trovaNome(int pid)
 	
 	if(access(perc, F_OK)==-1)
 	{
-	nome = NULL;
+		nome = NULL;
 	}
 	else
 	{
-	proc = fopen(perc, "rb");
-	fscanf(proc, "%*d %s", nome); 
-	fclose(proc);
+		proc = fopen(perc, "rb");
+		fscanf(proc, "%*d %s", nome); 
+		fclose(proc);
 	
 	return nome;
 	}			
@@ -283,7 +281,7 @@ int main(int argc, char* argv[])
 		}
 	}	
 	printf("%d \n", numeroproc);
-i=0;
+    i=0;
 
 
 	//for(;;)

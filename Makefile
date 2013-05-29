@@ -16,7 +16,7 @@ all: create_dir mkbkp equal plive
 
 create_dir:
 	mkdir -p files
-	mkdir -p /var/log/utility # remove first # in order to make mkdir work
+	mkdir -p /var/log/utility 
 
 managelogs.o: 
 	$(CC) $(CFLAGS) -c managelogs/managelogs.c -o managelogs/managelogs.o

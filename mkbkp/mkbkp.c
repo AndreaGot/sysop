@@ -436,8 +436,9 @@ void read_dirs (FILE *f) {
 		//printf("esco \n");
 	}
 
-	void trovaInizioFine(int cont)										// trova il carattere di inizio e di fine del file nella sezione %CONTENT%
-	{
+/* trova il carattere di inizio e di fine del file nella sezione %CONTENT% */
+
+	void trovaInizioFine(int cont)											{
 		FILE* contenuto;
 		char * path;
 		char x[8192];
