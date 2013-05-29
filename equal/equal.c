@@ -39,7 +39,7 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
     struct dirent *ent;
     char * new_folder1;
     dir1 = opendir(folder1);
-
+    new_folder1 = malloc (sizeof(char**) *5);
    
 	
   
@@ -68,6 +68,7 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 	    lunghezza =  strlen(radice);
 	    lung = strlen(folder1) + strlen(ent->d_name) + 2; 
 
+	    free(new_folder1);
 	    new_folder1 = malloc(sizeof(char*)*(lung));
 	    strcpy(new_folder1, folder1);    
 	    strcat(new_folder1, "/");
@@ -104,9 +105,10 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 
 }
 
+//qui inizia il programma
 int main( int argc, char *argv[])
 {
-
+    int differenzaFraFile = 0;
   
     char ** percorsi; 
     char ** percorsi2;
@@ -118,34 +120,40 @@ int main( int argc, char *argv[])
 			exit(0);
 	    }
 
+   //entrambi file
    if( !(isDIR(argv[1])) && !(isDIR(argv[2])) ){
 
 		//------------- sono 2 file ----------------
-	
-		if (compareFile(argv[1],argv[2]) )
+		differenzaFraFile = compareFile(argv[1],argv[2]);
+		if (differenzaFraFile==0 )
 		{
 			printf("true \n");
 			exit(0);
 		}else{
-			printf("false \n");
+			if(differenzaFraFile>0)
+			{
+				printf("false \n sono diversi al byte %d \n",differenzaFraFile);
+			}
 			exit(0);
 		}
 
-	}else{
+	}
 		
-		// ------- il primo è una cartella e il secondo è un file
-		 if( (isDIR(argv[1])) && !(isDIR(argv[2])) )
-		{
+	// ------- il primo è una cartella e il secondo è un file
+	
+	if( (isDIR(argv[1]))==true && (access(argv[2],F_OK)==-1) )
+	{
+			
 			printf("false \n");
 			exit(0);
 			// ----------------- il primo è un file e il secondo è una cartella
-		}else if( !(isDIR(argv[1])) && (isDIR(argv[2])) )
+	}else if( ( access(argv[1],F_OK)==-1 ) && (isDIR(argv[2])) )
 		{
 			printf("false \n");
 			exit(0);
 		}
-	}
-
+	
+	
     char * first = malloc(sizeof(char*) * (sizeof(argv[1])+3));
     first = argv[1];
    
@@ -154,18 +162,18 @@ int main( int argc, char *argv[])
 
    
    
-   // savedir(inizio,0,&percorsi,temp,num,inizio);
-    
-    int t = 0;//scorro il percorso e lo salvo nell'array percorsi
+   
+    //scorro il percorso e lo salvo nell'array percorsi e in t salvo la grandezza dell'array
+    int t = 0;	
     percorsi = scorripercorso(first,&t);
 
-   // printf("\n il primo è finito \n \n");
-
-    int t2 = 0;//scorro il percorso e lo salvo nell'array percorsi2
+  
+ 	//scorro il percorso e lo salvo nell'array percorsi2 e in t2 salvo la grandezza dell'array
+    int t2 = 0;
     percorsi2 = scorripercorso(second,&t2);
 	
    
-
+	//ordino gli array in modo che poi la verifica se le cartelle sono uguali o diverse è più veloce
     qsort((char**)percorsi,t, sizeof(char**),comp);
     qsort((char**)percorsi2,t2,sizeof(char**),comp);
 
@@ -180,9 +188,10 @@ int main( int argc, char *argv[])
   	  
 	  second[pos1*(-1)] = '\0';
 	}
-    /*
-		Qui faccio la stessa cosa di sopra...
-	*/    
+
+
+    /*qui controllo se c'è il simbolo '/' alla fine del secondo elemento, se c'è
+        lo tolgo*/    
 	char* fstPos = strrchr(first,47);
     int pos = first - fstPos;
 
@@ -268,8 +277,9 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 	bool sonouguali = true;
 	bool primavolta = true;
 	int res = 0;
+	int difference = 0;
 
-	char* ultimodiverso = malloc ( sizeof(char*) * 250);
+	char* ultimodiverso = malloc ( sizeof(char*) * 200);
 	strcpy(ultimodiverso," ");
 	
 	while(i<fLun && j<sLun)
@@ -280,7 +290,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		  char * secondo = malloc( sizeof(char**) * (strlen(second[j]) + strlen(sHead) +2) ) ;
 		  
 		  strcpy(primo, fHead);
-          	strcat(primo, first[i]);
+          	  strcat(primo, first[i]);
 		  
 		  strcpy(secondo, sHead);
 		  strcat(secondo, second[j]);
@@ -291,9 +301,9 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		
 		  }else{
 		    
-                 
-
-			if ( compareFile(primo,secondo) ){
+         		difference = compareFile(primo,secondo);     
+	
+			if ( difference == 0 ){
 		    		//printf("%s = %s \n",first[i],second[j]);
 			}else
 			{
@@ -302,7 +312,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 				printf("false \n");
 				}
 				sonouguali = false;
-				printf("I file %s sono diversi \n",first[i]);
+				printf("I file %s sono diversi al byte %d \n",first[i],difference);
 			}
 		   }
 
@@ -321,22 +331,9 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		
 		i++;
 		/* questo controllo serve ad evitare di scrivere tutti i sottopercorsi
-		 in caso ci siano cartelle diverse
-		*/
-		if (strcmp(ultimodiverso," ")== 0){
-			printf("<< %s \n",first[i-1]);
-			strcpy(ultimodiverso,first[i-1]);
-		    	
-			}
-		else
- 		   {
-			if ( strncmp(first[i-1],ultimodiverso, strlen(ultimodiverso)) != 0)
-				{
-				strcpy(ultimodiverso,first[i-1]);
-			    	printf("<< %s \n",first[i-1]);
-
-				}
-			}
+		 in caso ci siano cartelle diverse*/
+		
+		verificaLast(&ultimodiverso,first[i-1],"<<");
 
 		
 		}
@@ -354,21 +351,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		j++;
 		// questo controllo serve ad evitare di scrivere tutti i sottopercorsi
 		// in caso ci siano cartelle 
-			if (strcmp(ultimodiverso," ")== 0){
-				printf(">> %s \n",second[j-1]);
-				strcpy(ultimodiverso,second[j-1]);
-		    
-				}
-			else
- 		   	{
-				if ( strncmp(second[j-1],ultimodiverso, strlen(ultimodiverso)) != 0)
-					{
-					strcpy(ultimodiverso,second[j-1]);
-			   		printf(">> %s \n",second[j-1]);
 
-					}	
-			}
-
+		verificaLast(&ultimodiverso,second[j-1],">>");
 		}
 
 	}
@@ -379,21 +363,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 
 		while(i<fLun){	
 		i++;
-		   if (strcmp(ultimodiverso," ")== 0){
-				printf("<< %s \n",first[i-1]);
-				strcpy(ultimodiverso,first[i-1]);
-		    
-				}
-			else
- 		   	{
-				if ( strncmp(first[i-1],ultimodiverso, strlen(ultimodiverso)) == 0)
-					continue;
-				else{
-					strcpy(ultimodiverso,first[i-1]);
-			   		printf("<< %s \n",first[i-1]);
-
-					}	
-			}
+		
+		verificaLast(&ultimodiverso,first[i-1],"<<");
 
 
 		}
@@ -407,20 +378,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		while(j<sLun){	
 		j++;
 	
-		if (strcmp(ultimodiverso," ")== 0){
-				printf(">> %s \n",second[j-1]);
-				strcpy(ultimodiverso,second[j-1]);
-				}
-		else
- 		   	{
-				if ( strncmp(second[j-1],ultimodiverso, strlen(ultimodiverso)) == 0)
-					continue;
-				else{
-					strcpy(ultimodiverso,second[j-1]);
-			   		printf(">> %s \n",second[j-1]);
-
-					}	
-			}
+		
+		verificaLast(&ultimodiverso,second[j-1],">>");
 		}
 	}
 
@@ -430,17 +389,18 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 }
 /*
 Questa funzione, dati 2 file, verifica se sono uguali
-ritorna true se sono uguali e false se sono diversi
+ritorna 0 se sono uguali e 1 se sono diversi
+-1 in caso uno dei due elementi non esista
 Il controllo viene fatto byte per byte
 */
-bool compareFile(char * primo, char* secondo)
+int compareFile(char * primo, char* secondo)
 {
 	FILE *fileFST;
 	FILE *fileSND;
 
 	//qui controllo semplicemente se i file che sto controllando sono esattamente gl stessi
 	if (strcmp(primo,secondo) == 0)
-		return true;
+		return 0;
 
 
 	fileFST = fopen(primo, "rb");
@@ -452,13 +412,13 @@ bool compareFile(char * primo, char* secondo)
 	*/
 	if ( fileFST == NULL )
 	       {
-	       printf("Cannot open %s for reading ", primo );
-	       return false;
+	       printf("false \n Il file %s non esiste ", primo );
+	       return -1;
 	       }
 	else if (fileSND == NULL)
 	       {
-	       	printf("Cannot open %s for reading ", secondo );
-		return false;
+	       	printf("false \n Il file %s non esiste ", secondo );
+		return -1;
 		}
    	else
        	{
@@ -467,24 +427,25 @@ bool compareFile(char * primo, char* secondo)
        		char ch2  =  getc( fileSND ) ;
 		
 		if (ch1!=ch2)
-			return false;
+			return 1;
 
-       int i = 0;
+       int i = 1;
        while( (ch1!=EOF) && (ch2!=EOF) && (uguali==true))
         {
             ch1 = getc(fileFST);
             ch2 = getc(fileSND) ;
+
+	    i++;
 	    if(ch1!=ch2)
 	     {
 		uguali = false;
-		i++;
+		return i;
              }
         }
 
         if (uguali)
-            return true;
-        else if (ch1 !=  ch2)
-            return false;
+            return 0;
+       
 
         fclose ( fileFST );
         fclose ( fileSND );
@@ -492,6 +453,33 @@ bool compareFile(char * primo, char* secondo)
 	
 	return true;
 	
+}
+/*
+Questa funzione verifica quale elemento ho scritto per ultimo e se la prima parte del nuovo
+file è del tutto uguale al precedente ultimo scritto, Vuol dire che sono diversi perchè, il nuovo elemento che differisce, è un file 
+o una sottocartella che appartiene alla cartella che era diversa prima.
+Quindi evito di scrivere anche i file e le sottocartelle diverse, dato che se una cartella non è presente in uno dei due percorsi
+neanche tutti i suoi sottofile e sottocartelle lo saranno.
+*/
+void verificaLast(char** x, char* y,char* add)
+{
+	if (strcmp( (*x) ," ")== 0){
+		printf("%s %s \n",add,y);
+		free(*x);
+		(*x) = malloc( sizeof(char*) * sizeof(y) );
+		strcpy( (*x) ,y);
+	}
+	else
+ 	{
+		if ( strncmp(y,(*x) , strlen( (*x) ) ) != 0){
+			free(*x);
+			(*x) = malloc(sizeof(char*) * sizeof(y));
+			strcpy( (*x) ,y);
+			printf("%s %s \n",add,y);
+
+		}	
+	}
+		
 }
 
 
