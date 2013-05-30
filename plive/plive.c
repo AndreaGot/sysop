@@ -72,7 +72,7 @@ int kbhit(void)
 
 
 
-
+//funzione che calcola l'utilizzo della cpu inun dato momento
 double CPUvalue(double * array) 					//restituisce il numero di jiffies utilizzati dalla cpu in un certo momento
 {
 	double result;
@@ -125,7 +125,7 @@ void trovaProcessi()
 
 }
 
-
+//legge il file /proc/pid/stat e legge i dati relativi all'utilizzo della CPU
 void leggiPidStat(int index, double *array)
 {
 	FILE * pid;
@@ -155,7 +155,7 @@ void leggiPidStat(int index, double *array)
 
 
 
-
+//quick sort per ordinare le differenze di utilizzo cpu. Ordina anche i nomi
 void q_sort(double *array, int ileft, int iright) //quicksort
 {
   int l_hold = ileft;
@@ -209,6 +209,8 @@ void quickSort(double *array, int array_size) //chiamata a quicksort
   q_sort(array, 0, array_size - 1);
 }
 
+
+//dato un pid, restituisce il suo nome esteso
 char * trovaNome(int pid)
 {
 	char * perc;
@@ -235,6 +237,8 @@ char * trovaNome(int pid)
 	
 }
 
+
+//dato un pid, restituisce il pid del padre
 int trovaPadre(int pid)
 {
 	char * perc;
@@ -258,6 +262,9 @@ int trovaPadre(int pid)
 	}						
 	return 123;
 }
+
+
+
 
 int main(int argc, char* argv[])
 {
@@ -284,8 +291,6 @@ int main(int argc, char* argv[])
     i=0;
 
 
-	//for(;;)
-	//{
 		while(!kbhit())
 		{
 			trovaProcessi();
