@@ -153,8 +153,8 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 }
 
 
-
-char * collegaSlash(char * a, char * b)									//collega due stringhe inserendo un / tra di esse (in questo programma, "xxx", "/", "yyy")
+//collega due stringhe inserendo un / tra di esse (in questo programma, "xxx", "/", "yyy")
+char * collegaSlash(char * a, char * b)									
 {
 	
 	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
@@ -166,8 +166,8 @@ char * collegaSlash(char * a, char * b)									//collega due stringhe inserendo
 	return targetdir;														// e il nuovo percorso è fatto
 }
 
-
-char * collega(char * a, char * b)								// collega due stringhe (in questo programma, "xxx" e "/yyy")
+// collega due stringhe (in questo programma, "xxx" e "/yyy")
+char * collega(char * a, char * b)								
 {
 	
 	char *targetdir = malloc(2048);											//alloco 2048 byte di memoria
@@ -178,8 +178,8 @@ char * collega(char * a, char * b)								// collega due stringhe (in questo pro
 
 
 
-
-void writeByChar (const char *filename, FILE *out) {							//scrive il contenuto di un file in un altro, carattere per carattere (così si mantengono gli whitespace)
+//scrive il contenuto di un file in un altro, carattere per carattere (così si mantengono gli whitespace)
+void writeByChar (const char *filename, FILE *out) {							
     int c;
     FILE *file;
     //fprintf(out, "%s(%s) BEGIN\n", __func__, filename);
@@ -193,7 +193,7 @@ void writeByChar (const char *filename, FILE *out) {							//scrive il contenuto
         fprintf(out, "%s: failed to open file '%s' (%d)\n", __func__, filename, errno);
 		scrivilog("%s: failed to open file '%s' (%d)\n", __func__, filename, errno);
     }
-    //fprintf(out, "%s(%s) END\n", __func__, filename);
+    
 }				//copia un file lettera per lettera
 
 
@@ -204,7 +204,7 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	
 	
 	archivio = collegaSlash(getcwd(NULL, 0), nome);
-    arch = fopen(archivio, "w+b");
+    	arch = fopen(archivio, "w+b");
 	
 	
 	//-----------------------------------------------------------------------------------------------------------------------------------
@@ -266,6 +266,8 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	
 	
 	//-------------------------------------------------------- FINE LISTA ------------------------------------------------------------------
+
+
 	// -----------------------------------------------------INIZIO DIRECTORY ----------------------------------------------------------------
 	i=ind+3;
 
@@ -290,6 +292,8 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	fprintf(arch, "%s", "\n");
 	
 	//---------------------------------------------------------FINE DIRECTORY-------------------------------------------------------------
+
+
 	//----------------------------------------------------------INIZIO CONTENT------------------------------------------------------------
 	
 	
@@ -326,11 +330,14 @@ void creabkp(int numpar, char * param[], int ind)					// crea il backup
 	}
 	
 	//-------------------------------------------------------FINE CONTENT-----------------------------------------------------------------------
+
 	fclose(arch);
 	puts("creazione terminata!\n");
 	scrivilog("creazione terminata!\n");
 }
 
+
+//legge un file parola per parola 
 void read_words (FILE *f) {
     char x[8192];
 	bool listTrovata = false;
@@ -352,7 +359,7 @@ void read_words (FILE *f) {
 		}
 		else if (listTrovata)
 		{
-        puts(x);
+        		puts(x);
 			scrivilog("%s\n", x);
 		}
     }
@@ -361,6 +368,8 @@ void read_words (FILE *f) {
 }										// lista i file contenuti nella sezione %LIST%
 
 
+
+// dato l'archivio, legge l'elenco delle cartelle
 void read_dirs (FILE *f) {
     char x[8192];
 	bool dirsTrovata = false;
@@ -394,11 +403,12 @@ void read_dirs (FILE *f) {
 
 		}
     }
-	//printf("esco \n");
+
 	
-}										// legge la sezione %DIRS% dell'archivio
+}										
 
 
+//crea i file ocntenuti nella sezione %FILES%
 	void crea_file(FILE *f)												// crea i file estratti dall'archivio
 	{
 		int contatore = 0;
@@ -413,10 +423,7 @@ void read_dirs (FILE *f) {
 			}
 			else if (strcmp(x, "%LIST%")==0 && listTrovata)
 			{
-				//long position;
-				//position = ftell(f);
-				//printf("trovato il secondo \n");
-				//printf("LIST trovato alla posizione %ld", position);
+			
 				fseek(f, 0, SEEK_END);
 				break;
 			}
@@ -426,14 +433,14 @@ void read_dirs (FILE *f) {
 				char* file;							// stringa contenente il percorso da aprire (verrà creato in seguito)
 				file = collegaSlash(getcwd(NULL, 0), x);
 				creat(file, PERMS);
-				//printf("sto cercando l'inizio e la fine di content, passando un contatore %d \n", contatore);
-				trovaInizioFine(contatore);
-				//printf("ora scrivo il file trovato");
+			
+				trovaInizioFine(contatore); //cerco il carattere di inizio e fine del content
+			
 				scriviFile(file);
-				//inserisco funzione che parte da inizio e scrive carattere per carattere nel file destinazione. se la posizione di ftell è uguale a fine, allora esci.
+				
 			}
 		}
-		//printf("esco \n");
+		
 	}
 
 /* trova il carattere di inizio e di fine del file nella sezione %CONTENT% */
@@ -451,17 +458,12 @@ void read_dirs (FILE *f) {
 			if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)-1) )
 			{
 				inizio = ftell(contenuto);
-				//puts("trovato il primo \n");
-				//puts(x);
-				//printf("CONTENT trovato alla posizione %d \n", inizio);
 				i++;
 			}
 			else if(strcmp(x, "%CONTENT%")==0 && i == ((cont*2)) )
 			{
 				fine = ftell(contenuto);
 				daleggere = fine-9;
-				//puts("trovato il primo \n");
-				//printf("CONTENT trovato alla posizione %d \n", fine);
 				break;
 				i++;
 			}
@@ -471,10 +473,10 @@ void read_dirs (FILE *f) {
 			}
 
 
-			//printf("giro numero %d \n", i);
+	
 		}
 		
-		//printf("esco da trova Inizio File  \n");
+	
 		fclose(contenuto);
 		
 	}
@@ -515,7 +517,7 @@ void read_dirs (FILE *f) {
 
 
 //-------------------------------------------------------INIZIO LIST PER %LIST%-----------------------------------------------------------------------
-
+	//per FTW - lista i nomi dei file
 int list(const char *name, const struct stat *status, int type) {
 	int index = 0;
 	char * copy;
@@ -525,11 +527,11 @@ int list(const char *name, const struct stat *status, int type) {
 	
 	if(type == FTW_D && strcmp(".", name) != 0 && strcmp("..", name) != 0 && strcmp(name + lung,"/.DS_Store")!=0)
 	{
-		//printf("archivio cartella: \t%s\n", name);
+	 //se è una cartella non fare nulla
 	}
-	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0)
+	else if(type == FTW_F  && strcmp(name+ lung,"/.DS_Store")!=0) //se è un file archivialo
 	{
-		//printf("0%3o\t%s\n", status->st_mode&0777, name);
+	
 		
 		copy = strdup(name);
 		
@@ -547,7 +549,7 @@ int list(const char *name, const struct stat *status, int type) {
 	}	
 	
 	return 0;
-}	//per FTW - lista i nomi dei file
+}
 
 //-------------------------------------------------------FINE LIST-----------------------------------------------------------------------
 //-------------------------------------------------------INIZIO LISTC PER %CONTENT%-----------------------------------------------------------------------
@@ -561,11 +563,10 @@ int listC(const char *name, const struct stat *status, int type) {
 	}
 	
 	
-	if(type == FTW_F && strcmp(name + lung,".DS_Store")!=0)
+	if(type == FTW_F && strcmp(name + lung,".DS_Store")!=0) //se è un file scrivilo carattere per carattere
 	{
 		fprintf(arch, "%s", CONTENT);
 		fprintf(arch, "%s", " ");
-		//printf("0%3o\t%s\n", status->st_mode&0777, name);
 		writeByChar(name, arch);
 		fprintf(arch, "%s", " ");
 		fprintf(arch, "%s", CONTENT);
@@ -635,7 +636,7 @@ void estrai()															// estrae i dati dall'archivio
 	FILE * archivio;											
 	char* daEstrarre;											// stringa contenente il percorso da aprire (verrà creato in seguito)
 	daEstrarre = collegaSlash(getcwd(NULL, 0), nome);			// concatena il path attuale (quello dove viene eseguito il programma) con il nome del file passato
-    if(access(daEstrarre, F_OK)==-1)
+    	if(access(daEstrarre, F_OK)==-1)
 	{
 		puts("Il file da estrarre non esiste");
 		scrivilog("Il file da estrarre non esiste");
