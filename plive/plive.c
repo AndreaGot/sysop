@@ -328,7 +328,8 @@ int main(int argc, char* argv[])
 				printf("\n");
 				j++;
 			}
-			printf("PID \t padre \t %CPU \t nome \n \n")
+			printf("PID \t padre \t CPU \t\t nome \n \n");
+
 			while(i<numeroproc)
 			{
 				wparent = trovaPadre(processi[size-1-i]);

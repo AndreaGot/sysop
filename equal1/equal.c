@@ -90,7 +90,7 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 		*percorsi =  realloc((*percorsi),sizeof(char**) * (*n));
 		}
 	    
-	   //printf("%s \n",(*percorsi)[(*i)-1]);
+	   // printf("%s \n",(*percorsi)[(*i)-1]);
             /* Recurse at a new indent level */
 
 	    if (isDIR(new_folder1)){
@@ -520,8 +520,8 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 
 	//ora inizio a confrontare i 2 file
-       	char ch1  =  getc( fileFST ) ; //uso i char che equivalgono ad un byte
-        char ch2  =  getc( fileSND ) ;
+       	unsigned char ch1  =  getc( fileFST ) ;
+       	unsigned char ch2  =  getc( fileSND ) ;
 		
 	if (ch1!=ch2){
 		uguali = false;
@@ -567,6 +567,7 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 	//nel caso un file sia più piccolo dell'altro continuo a scrivere le differenze
 	int j= i;
+	ch1 = getc(fileFST);
 	while( (ch1!=EOF) )
 	{
 		ch1 = getc(fileFST);
@@ -590,8 +591,9 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 		}
 
 	}
-	
+
 	//nel caso un file sia più piccolo dell'altro continuo a scrivere le differenze
+	ch2 = getc(fileSND) ;
 	while( (ch2!=EOF) )
 	{
 		ch2 = getc(fileFST);
