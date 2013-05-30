@@ -444,7 +444,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 
 /*
 Questa funzione verifica quale elemento ho scritto per ultimo e se la prima parte del nuovo
-file è del tutto uguale al precedente ultimo scritto, Vuol dire che sono diversi perchè, il nuovo elemento che differisce, è un file 
+file è del tutto uguale al precedente ultimo scritto, Vuol dire che il nuovo elemento che differisce, perchè è un file 
 o una sottocartella che appartiene alla cartella che era diversa prima.
 Quindi evito di scrivere anche i file e le sottocartelle diverse, dato che se una cartella non è presente in uno dei due percorsi
 neanche tutti i suoi sottofile e sottocartelle lo saranno.
@@ -479,6 +479,7 @@ void verificaLast(char** x, char* y,char* add)
 
 /*
    Se sono uguali restituisce true, altrimenti restituisce false
+   Inoltre stampa a video la prima differenza, mentre nei log scrive tutte le posizioni dei byte in cui differisce
 */
 bool compareFile(char* primo, char* secondo, bool* primavolta){
 	
