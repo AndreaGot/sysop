@@ -87,7 +87,7 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 		*percorsi =  realloc((*percorsi),sizeof(char**) * (*n));
 		}
 	    
-	    //printf("%*s%s \n",depth,"",(*percorsi)[(*i)-1]);
+	   // printf("%s \n",(*percorsi)[(*i)-1]);
             /* Recurse at a new indent level */
 
 	    if (isDIR(new_folder1)){
@@ -108,8 +108,8 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 //qui inizia il programma
 int main( int argc, char *argv[])
 {
-    int differenzaFraFile = 0;
-  
+  //  int differenzaFraFile = 0;
+    bool uguali = true;
     char ** percorsi; 
     char ** percorsi2;
 
@@ -154,20 +154,12 @@ int main( int argc, char *argv[])
    if( !(sonocartella1) && !(sonocartella2) ){
 
 		//------------- sono 2 file ----------------
-
-		differenzaFraFile = compareFile(argv[1],argv[2]);
-		if (differenzaFraFile==0 )
-		{
-			scrivilog("Sono 2 file uguali \n");
-			printf("true \n");
-			exit(0);
-		}else{
-			
 		
-			scrivilog("Sono 2 file diversi \n");
-			printf("false \n sono diversi al byte %d \n",differenzaFraFile);
-			exit(0);
-		}
+		uguali = compareFile(argv[1],argv[2],&uguali);
+		if (uguali){
+			printf("true \n");
+			}		
+		exit(0);
 
 	}
 		
@@ -317,7 +309,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 	bool sonouguali = true;
 	bool primavolta = true;
 	int res = 0;
-	int difference = 0;
+	//int difference = 0;
 
 	char* ultimodiverso = malloc ( sizeof(char*) * 200);
 	strcpy(ultimodiverso," ");
@@ -344,24 +336,10 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		 
 		  if ( !isDIR(primo) && !isDIR(secondo) ){ //se sono entrambi cartelle sono uguali
 		    					   //se sono file devo verificare se sono uguali e dove differiscono 
-         		difference = compareFile(primo,secondo);     
-	
-			if ( difference == 0 ){
-		    		scrivilog("I file sono uguali \n");
-			}else
-			{
-				
-				if(primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
-				primavolta = false;
-				scrivilog("Ho trovato il primo elemento che differisce \n");
-				printf("false \n");
-				}
+         		
+			sonouguali = sonouguali & compareFile(primo,secondo,&primavolta);
 
-				sonouguali = false; //setto la variabile a false così alla fine so che le due cartelle non sono uguali
-
-				printf("I file %s sono diversi al byte %d \n",first[i],difference);
-				scrivilog("I file %s diversi al byte %d \n",first[i],difference);
-			}
+			
 		   }else
 			scrivilog("In entrambi i percorsi c'è la stessa cartella \n");
 
@@ -463,74 +441,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 }
 
 
-/*
-Questa funzione, dati 2 file, verifica se sono uguali
-ritorna 0 se sono uguali e 1 se sono diversi
--1 in caso uno dei due elementi non esista
-Il controllo viene fatto byte per byte
-*/
-int compareFile(char * primo, char* secondo)
-{
-	scrivilog("confronto il file %s e %s se sono uguali ritorno 0 altrimenti un numero pari al primo byte diverso \n",primo,secondo);
-	FILE *fileFST;
-	FILE *fileSND;
 
-	//qui controllo semplicemente se i file che sto controllando sono esattamente gl stessi
-	if (strcmp(primo,secondo) == 0)
-		return 0;
-
-
-	fileFST = fopen(primo, "rb");
-	fileSND = fopen(secondo, "rb");
-	bool uguali = true;
-	
-	/*
-	Prima verifico se i 2 file esistono e si possono aprire
-	*/
-	if ( fileFST == NULL )
-	       {
-	       printf("false \n Il file %s non esiste ", primo );
-	       return -1;
-	       }
-	else if (fileSND == NULL)
-	       {
-	       	printf("false \n Il file %s non esiste ", secondo );
-		return -1;
-		}
-   	else
-       	{
-		//ora inizio a confrontare i 2 file
-       		char ch1  =  getc( fileFST ) ;
-       		char ch2  =  getc( fileSND ) ;
-		
-		if (ch1!=ch2)
-			return 1;
-
-       int i = 1;
-       while( (ch1!=EOF) && (ch2!=EOF) && (uguali==true))
-        {
-            ch1 = getc(fileFST);
-            ch2 = getc(fileSND) ;
-
-	    i++;
-	    if(ch1!=ch2)
-	     {
-		uguali = false;
-		return i;
-             }
-        }
-
-        if (uguali)
-            return 0;
-       
-
-        fclose ( fileFST );
-        fclose ( fileSND );
-       }
-	
-	return true;
-	
-}
 /*
 Questa funzione verifica quale elemento ho scritto per ultimo e se la prima parte del nuovo
 file è del tutto uguale al precedente ultimo scritto, Vuol dire che sono diversi perchè, il nuovo elemento che differisce, è un file 
@@ -564,6 +475,153 @@ void verificaLast(char** x, char* y,char* add)
 		}	
 	}
 		
+}
+
+/*
+   Se sono uguali restituisce true, altrimenti restituisce false
+*/
+bool compareFile(char* primo, char* secondo, bool* primavolta){
+	
+	scrivilog("confronto il file %s e %s se sono uguali ritorno true altrimenti false \n",primo,secondo);
+	FILE *fileFST;
+	FILE *fileSND;
+
+	bool printedfirst = false;//questa booleana la uso in modo da stampare solo il primo bit che differisce
+				//tutto il resto viene scritto nel file di log
+
+
+	//qui controllo semplicemente se i file che sto controllando sono esattamente gl stessi
+	if (strcmp(primo,secondo) == 0){		
+		return true;
+		}
+	fileFST = fopen(primo, "rb");
+	fileSND = fopen(secondo, "rb");
+	bool uguali = true;
+
+
+	/*
+	Prima verifico se i 2 file esistono e si possono aprire
+	*/
+	if ( fileFST == NULL )
+	       {
+	       printf("false \n Il file %s non esiste ", primo );
+	       return false;
+	       }
+	else if (fileSND == NULL)
+	       {
+	       	printf("false \n Il file %s non esiste ", secondo );
+		return false;
+	}else{
+
+
+	//ora inizio a confrontare i 2 file
+       	char ch1  =  getc( fileFST ) ;
+       	char ch2  =  getc( fileSND ) ;
+		
+	if (ch1!=ch2){
+		uguali = false;
+
+	if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
+		*primavolta = false;
+		scrivilog("Ho trovato il primo elemento che differisce \n");
+		printf("false \nDifferisce al byte: 1 \n");
+		printedfirst = true;
+		uguali = false;
+		}
+	}	
+
+	  int i = 1;
+       while( (ch1!=EOF) && (ch2!=EOF))
+        {
+            ch1 = getc(fileFST);
+            ch2 = getc(fileSND) ;
+
+	    i++;
+	    if(ch1!=ch2)
+	     {
+		uguali = false;
+			
+
+		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
+			*primavolta = false;
+			scrivilog("Ho trovato il primo elemento che differisce \n");
+			printf("false \n%s differiscono al byte: %d \n",primo,i);
+			printedfirst = true;
+		}else{
+			if (printedfirst==false)
+			{	
+			//printf(" %d ",i);
+			printf("%s differiscono al byte: %d \n",primo,i);
+			printedfirst = true;
+			}
+		}		
+             }
+        }
+
+	int j= i;
+	ch1 = getc(fileFST);
+	while( (ch1!=EOF) )
+	{
+		ch1 = getc(fileFST);
+		j++;
+		uguali = false;
+
+		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
+		*primavolta = false;
+		scrivilog("Ho trovato il primo elemento che differisce \n");
+		printf("false \n%s differiscono al byte: %d \n",primo,j);
+		printedfirst = true;
+		}else{
+			if (printedfirst==false)
+			{	
+			//printf(" %d ",j);
+			printf("%s differiscono al byte: %d \n",primo,j);
+			printedfirst = true;
+			}
+		}
+
+	}
+
+	ch2 = getc(fileSND) ;
+	while( (ch2!=EOF) )
+	{
+		ch2 = getc(fileFST);
+		i++;
+		
+		uguali = false;
+
+		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
+		*primavolta = false;
+		scrivilog("Ho trovato il primo elemento che differisce \n");
+		printf("false \n%s differiscono al byte: %d \n",primo,i);
+		printedfirst = true;
+		}else{
+		
+			if (printedfirst==false)
+			{	
+			//printf(" %d ",i);
+			printf("%s differiscono al byte: %d \n",primo,i);
+			printedfirst = true;
+			}
+		}
+
+	}
+
+
+        if (uguali){
+	    scrivilog("I file sono uguali \n");
+            return true;
+	}else{
+		return false;
+	}
+
+        fclose ( fileFST );
+        fclose ( fileSND );
+       }
+
+
+
+
 }
 
 

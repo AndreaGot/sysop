@@ -1,0 +1,58 @@
+/*
+ ============================================================================
+ Academic Year : 2012-2013
+ Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
+ Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
+ Name          : equal.c
+ Description   : Ritorna true se gli oggetti passati come parametro sono uguali, false altrimenti 
+ ============================================================================
+ */
+
+
+#include <unistd.h>
+#include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include "../managelogs/managelogs.h"
+#include "equal.h"
+
+
+int lunghezza;
+int lung;
+
+/*
+   Questa funzione scorre la cartella e tutte le sotto cartelle di una certa cartella @folder1.
+   Man mano che attraversa il percorso lo salva in un array @percorsi.
+   @radice serve per togliere sempre la parte iniziale che altrimenti sarebbe uguale per ogni elemento
+   @n invece serve per ingrandire l'array quando è pieno attraverso l'uso della realloc
+   @i serve prima di tutto per progredire nell'array, inoltre alla fine conterrà la dimensione dell'array
+
+*/
+void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
+{
+
+    DIR *dir1;
+
+    struct dirent *ent;
+    char * new_folder1;
+    dir1 = opendir(folder1);
+    new_folder1 = malloc (sizeof(char**) *5);
+   
+	
+  
+
+  // se si passa un NULL alla readdir va in segmentation fault
+  // quindi sfrutto il fatto che C è pigro e in questo modo in caso
+  // dir1 sia NULL non faccio la readdir
+
+   while ( (dir1 != NULL) && (NULL != (ent = readdir(dir1)) ) ){
+        
+	if ( strcmp(ent->d_name, ".")  == 0){
+			continue;
+		}
+	if ( strcmp(ent->d_name, "..")  == 0){
+			continue;
+		}
