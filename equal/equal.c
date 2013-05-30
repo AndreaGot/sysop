@@ -117,6 +117,7 @@ int main( int argc, char *argv[])
     char ** percorsi2;
 
     crealog(argv[0]);
+    scrivilog("Inizia il programma, gli argomenti ricevuti sono %s e %s \n",argv[1],argv[2]);
   
    if ( argc != 3 ) /* argc should be 3 for correct execution */
 	    {
@@ -125,7 +126,7 @@ int main( int argc, char *argv[])
 		exit(0);
 	    }
 
-   scrivilog("controllo se i percorsi esistono");
+   scrivilog("Controllo se i percorsi esistono \n");
    //controllo se i percorsi esistono
    int esiste1 = access(argv[1],F_OK);
    int esiste2 = access(argv[2],F_OK);
@@ -139,17 +140,19 @@ int main( int argc, char *argv[])
 	}else if(esiste1==-1)
 	{
 
-	printf("Il primo percorso inserito non esiste, inseriscine un'altro\n");
+	printf("Il percorso %s non esiste, inseriscine un'altro\n",argv[1]);
 	scrivilog("Il primo percorso è sbagliato \n");
 	exit(0);
 
 	}else if(esiste2==-1){
 
-	printf("Il secondo percorso inserito non esiste, inseriscine un'altro\n");
+	printf("Il percorso %s non esiste, inseriscine un'altro\n", argv[2]);
 	scrivilog("Il secondo percorso è sbagliato \n");
 	exit(0);
 
 	}
+
+	scrivilog("Esistono \n");
 
    int sonocartella1 = isDIR(argv[1]);
    int sonocartella2 = isDIR(argv[2]);
@@ -157,7 +160,7 @@ int main( int argc, char *argv[])
    if( !(sonocartella1) && !(sonocartella2) ){
 
 		//------------- sono 2 file ----------------
-		
+		scrivilog("Sono 2 file \n"); 
 		uguali = compareFile(argv[1],argv[2],&uguali);
 		if (uguali){
 			printf("true \n");
@@ -168,18 +171,18 @@ int main( int argc, char *argv[])
 		
 	// ------- il primo è una cartella e il secondo è un file
 	
-	scrivilog("controllo se gli elementi sono dello stesso tipo (cartella o file) \n");
+	scrivilog("Controllo se gli elementi sono dello stesso tipo (cartella o file) \n");
 	if( (sonocartella1) && !(sonocartella2) )
 	{
 			printf("false \n");
-			scrivilog("gli elementi sono di tipo diverso \n");
+			scrivilog("false \nGli elementi sono di tipo diverso: %s è una cartella e %s è un file \n",argv[1],argv[2]);
 			exit(0);
 		
 	// ----------------- il primo è un file e il secondo è una cartella
 	}else if( !(sonocartella1) && (sonocartella2) )
 		{
 			printf("false \n");
-			scrivilog("gli elementi sono di tipo diverso \n");
+			scrivilog("false \nGli elementi sono di tipo diverso: %s è una file e %s è una cartella \n",argv[1],argv[2]);
 			exit(0);
 		}
 	
@@ -255,7 +258,7 @@ int main( int argc, char *argv[])
 */
 char** scorripercorso(char* folder,int* n)
 {
-    scrivilog("Sono nella funzione scorripercorso e inizio a riempire l'array dei percorsi \n");
+    scrivilog("Riempio l'array dei percorsi associato a %s \n",folder);
     int num [1];
     (*num) = 10;
     char ** percorsi = malloc(sizeof(char**) * (*num));
@@ -306,7 +309,7 @@ Questa funzione riceve in input
 */
 void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, char* sHead)
 {
-	scrivilog("entro nella funzione compareArray, inizio a confrontare i due array \n"); 
+	scrivilog("Inizio a confrontare i due array dei percorsi \n"); 
 	int i = 0;
 	int j = 0;
 	bool sonouguali = true;
@@ -344,7 +347,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 
 			
 		   }else
-			scrivilog("In entrambi i percorsi c'è la stessa cartella \n");
+			scrivilog("In entrambi i percorsi c'è la cartella %s \n",first[i]);
 
 		   i++;
 		   j++;			
@@ -362,9 +365,9 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		sonouguali = false; //setto la variabile a false così alla fine so che le due cartelle non sono uguali
 		
 		i++;
+
 		/* questo controllo serve ad evitare di scrivere tutti i sottopercorsi
-		 in caso ci siano cartelle diverse*/
-		
+		 in caso ci siano cartelle diverse*/		
 		verificaLast(&ultimodiverso,first[i-1],"<<");
 
 		
@@ -380,6 +383,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 			printf("false \n");
 			}
 		
+		
 		sonouguali = false; //setto la variabile a false così alla fine so che le due cartelle non sono uguali
 
 	
@@ -387,14 +391,14 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 	
 
 		//prima di mettere a video un'elemento che differisce,
- 		//controllo che non sia la sottocartella di un elemento che sappiamo già che differisce
-		//così evito di scrivere tutti i sottopercorsi
+ 		//controllo che non sia la sottocartella di un elemento che abbiamo già stampato sul dispay
+		//così evito di scrivere tutti i sottopercorsi diversi
 		verificaLast(&ultimodiverso,second[j-1]," >>>>");
 		}
 
 	}
 	
-	// in questo punto controllo se ci sono elementi che non ho guardato perchè il ciclo si è concluso prima
+	// nel caso la prima cartella contenga più elementi della seconda
 	if ( i<fLun){
 
 		if(primavolta) // se è la prima volta che trovo un elemento diverso scrivo false
@@ -407,8 +411,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		sonouguali = false;
 
 		while(i<fLun){	
+
 		i++;
-		
 		verificaLast(&ultimodiverso,first[i-1],"<<");
 
 
@@ -417,7 +421,7 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 
 	
 
-	// in questo punto controllo se ci sono elementi che non ho guardato perchè il ciclo si è concluso prima
+	//nel caso la seconda cartella contenga più elementi della prima
 	if (j <sLun){
 
 		if(primavolta) // se è la prima volta che trovo un elemento diverso scrivo false
@@ -429,35 +433,40 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 
 		sonouguali = false;
 		while(j<sLun){	
+
 		j++;
-	
-		
 		verificaLast(&ultimodiverso,second[j-1]," >>>>");
 		}
 	}
 
 
-	if(sonouguali){
-		printf("true \n"); //se non ho trovato neanche un elemento che differisce scrivo true
-		scrivilog("Sono uguali \n");
+	if(sonouguali){   //se non ho trovato neanche un elemento che differisce scrivo true
+		printf("true \n"); 
+		scrivilog("TRUE \n");
+		}else{
+		scrivilog("FALSE \n");
 		}
 }
 
 
 
 /*
-Questa funzione verifica quale elemento ho scritto per ultimo e se la prima parte del nuovo
-file è del tutto uguale al precedente ultimo scritto, Vuol dire che il nuovo elemento che differisce, perchè è un file 
-o una sottocartella che appartiene alla cartella che era diversa prima.
-Quindi evito di scrivere anche i file e le sottocartelle diverse, dato che se una cartella non è presente in uno dei due percorsi
-neanche tutti i suoi sottofile e sottocartelle lo saranno.
+Questa funzione verifica qual'è l'ultimo elemento diverso che ho stampato a video e quello che sto per stampare.
+SE quello che sto per stampare ai primi strlen(ultimo elemento diverso) caratteri uguali, vuol dire che 
+quello che sto per stampare è una sottocartella dell'ultimo elemento diverso.
+Ma sarebbe ripetitivo, inoltre è ovvio che se una cartella non appartiene ad entrambi neanche le sue 
+sottocartelle e i sottofile apparterrano ad entrambi.
+
 */
 void verificaLast(char** x, char* y,char* add)
 {
 	if (strcmp( (*x) ," ")== 0){
 		printf("%s %s \n",add,y);
 
-		scrivilog("l'elemento %s è contenuto in uno solo dei due percorsi",y);
+		if (strcmp(add,"<<")== 0)
+			scrivilog("L'elemento %s è contenuto solo nella prima cartella \n",y);
+		else
+			scrivilog("L'elemento %s è contenuto solo nella seconda cartella \n",y);
 
 		free(*x);
 		(*x) = malloc( sizeof(char*) * sizeof(y) );
@@ -471,7 +480,10 @@ void verificaLast(char** x, char* y,char* add)
 			(*x) = malloc(sizeof(char*) * sizeof(y));
 			strcpy( (*x) ,y);
 
-			scrivilog("l'elemento %s è contenuto in uno solo dei due percorsi",y);
+			if (strcmp(add,"<<")== 0)
+				scrivilog("l'elemento %s è contenuto solo nella prima cartella \n",y);
+			else
+				scrivilog("l'elemento %s è contenuto solo nella seconda cartella \n",y);
 
 			printf("%s %s \n",add,y);
 
@@ -486,7 +498,7 @@ void verificaLast(char** x, char* y,char* add)
 */
 bool compareFile(char* primo, char* secondo, bool* primavolta){
 	
-	scrivilog("confronto il file %s e %s se sono uguali ritorno true altrimenti false \n",primo,secondo);
+	scrivilog("Confronto il file %s e %s \n",primo,secondo);
 	FILE *fileFST;
 	FILE *fileSND;
 
@@ -549,14 +561,19 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 			*primavolta = false;
-			scrivilog("Ho trovato il primo elemento che differisce \n");
+			scrivilog("false \nHo trovato i primi elementi che differiscono: %s \n",primo);
+			scrivilog("Differiscono al byte:\n%d",i); 
 			printf("false \n%s differiscono al byte: %d \n",primo,i);
 			printedfirst = true;
 		}else{
+
+			//questo if mi serve affinchè mostri a display solo il primo byte diverso
+			//invece nel file di log li scrivo tutti, in modo che lì sarà visibile tutte le differenze fra i 2 file
+			//ma a schermo mostro solo le maggiori differenze
 			if (printedfirst==false)
-			{	
-			
-			printf("%s differiscono al byte: %d \n",primo,i);
+			{			
+			scrivilog("I file %s differiscono al byte:\n%d ",primo,i);
+			printf("%s differiscono al byte:\n",primo);
 			printedfirst = true;
 			}
 
@@ -575,14 +592,18 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 		*primavolta = false;
-		scrivilog("Ho trovato il primo elemento che differisce \n");
+		scrivilog("false\nHo trovato il primo elemento che differisce \n");
 		printf("false \n%s differiscono al byte: %d \n",primo,j);
 		printedfirst = true;
 		}else{
+			//questo if mi serve affinchè mostri a display solo il primo byte diverso
+			//invece nel file di log li scrivo tutto, in modo che lì sarà visibile tutte le differenze fra i 2 file
+			//ma a schermo mostro solo le maggiori differenze
+
 			if (printedfirst==false)
 			{	
-			
-			printf("%s differiscono al byte: %d \n",primo,j);
+			scrivilog("I file %s differiscono al byte:\n%d ",primo,j);
+			printf("I file %s differiscono al byte: %d \n",primo,j);
 			printedfirst = true;
 			}
 
@@ -601,13 +622,17 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 		*primavolta = false;
-		scrivilog("Ho trovato il primo elemento che differisce \n");
+		scrivilog("false \nHo trovato il primo elemento che differisce \n");
 		printf("false \n%s differiscono al byte: %d \n",primo,i);
 		printedfirst = true;
 		}else{
-		
+				
+			//questo if mi serve affinchè mostri a display solo il primo byte diverso
+			//invece nel file di log li scrivo tutto, in modo che lì sarà visibile tutte le differenze fra i 2 file
+			//ma a schermo mostro solo le maggiori differenze
 			if (printedfirst==false)
 			{	
+			scrivilog("I file %s differiscono al byte:\n%d ",primo,i);
 			printf("%s differiscono al byte: %d \n",primo,i);
 			printedfirst = true;
 			}
@@ -618,10 +643,10 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 
         if (uguali){
-	    scrivilog("I file sono uguali \n");
+	    scrivilog("\nI file sono uguali \n");
             return true;
 	}else{
-		scrivilog("ho finito di scorrere i 2 file %s \n");
+		scrivilog("\nHo finito di scorrere i 2 file %s, sono diversi \n");
 		return false;
 	}
 

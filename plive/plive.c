@@ -95,7 +95,7 @@ double CPUvalue(double * array) 					//restituisce il numero di jiffies utilizza
 // prendo la lista dei processi attivi nel momento della chiamata	
 void trovaProcessi()								
 {
-	int i = 0;
+	
 	DIR *dir;
 	struct dirent *ent;
 	bool trovato = false;
