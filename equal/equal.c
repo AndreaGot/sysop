@@ -554,6 +554,7 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 			}
 			
 		printf("%s Differisce al byte: 1",primo);
+		printedfirst = true;
 		scrivilog("%s Differisce al byte: 1",primo);
 		stampaBit(ch1,ch2,'s',numval);
 		stampaBit(ch1,ch2,'l',numval);

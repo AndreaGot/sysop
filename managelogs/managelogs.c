@@ -24,34 +24,34 @@
 static FILE * log;
 
 // questa funzione si occupa di creare il log se non esiste, altrimenti lo apre
-int crealog(char * progname){
+int crealog(char * programma){
 
 
-	progname = basename(strdup(progname));
-	  if(log != NULL){
-       return 1;					//se il log esiste aprilo
-    }
-	int size = strlen(progname);
+	
+	programma = basename(strdup(programma));
+	  
+	if(log != NULL)
+	       return 1;					//se il log esiste aprilo
+    
+	
+	
+	int size = strlen(programma);
 	char * file_to_open = malloc(strlen(PATH) + size + 1);
 	strcpy(file_to_open, PATH); 			//qui viene aggiunta l'intestazione /var/log/utility
-	strcat(file_to_open, progname);			//qui viene aggiunto il nome progname
+	strcat(file_to_open, programma);			//qui viene aggiunto il nome progname
 
-    FILE * temp = fopen(file_to_open, "r");
-    if(temp == NULL)
-	{
-        fprintf(stderr,"Il file di log %s non esiste. Eseguo la creazione \n",file_to_open);
-    }
+	FILE * temp = fopen(file_to_open, "r");
+	if(temp == NULL)
+        	fprintf(stderr,"Il file di log %s non esiste.\n Ora lo creo \n",file_to_open);
 	else
-	{
         fclose(temp);
-    }
+  
 
 	log = fopen(file_to_open, "a");// viene creato e aperto in modalità append()
 				// i privilegi sono di sudoer			
 	if (log == NULL)
-	{
 		return 1;
-	}
+	
 
     free(file_to_open);
 	return 0;
@@ -60,31 +60,30 @@ int crealog(char * progname){
 
 //si occupa di scrivere i log
 int scrivilog(char * format, ...){
-    va_list arg_list;
-    va_start(arg_list, format);
+
+    va_list argomenti;
+    va_start(argomenti, format);
     if(log == NULL)
-	{
-        return 1;
-    }
-   
-    vfprintf(log, format, arg_list);
-    va_end(arg_list);
-return 0;
+	return 1;
+
+    vfprintf(log, format, argomenti);
+    va_end(argomenti);
+
+    return 0;
 }
 
+
+
 int chiudilog(){
+    int logaperto;
     if(log == NULL)
-	{
-        return 1;
-    }
-
-	
-	int out = fclose(log);
-	if (out != 0)
-	{
+	return 1;
+    else{
+	logaperto = fclose(log);
+	if (logaperto != 0)
 		return 1;
-	}
-
+	
 	return 0;
+	}
 }
 
