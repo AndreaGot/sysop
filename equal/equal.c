@@ -546,13 +546,15 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 			*primavolta = false;
-			scrivilog("Ho trovato il primo elemento che differisce \n");
+			scrivilog("1 \n Ho trovato il primo elemento che differisce \n");
 			numval++;
-			printf("1 \nDifferisce al byte: 1");
+			printf("1 \n");
 			printedfirst = true;
 			uguali = false;
 			}
 			
+		printf("%s Differisce al byte: 1",primo);
+		scrivilog("%s Differisce al byte: 1",primo);
 		stampaBit(ch1,ch2,'s',numval);
 		stampaBit(ch1,ch2,'l',numval);
 		

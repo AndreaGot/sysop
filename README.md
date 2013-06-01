@@ -11,7 +11,7 @@ Works by archiving files or folders user passes as arguments. Function also list
 
 ###equal
 
-Returns true if two folders or files passed as arguments have the same content, false otherwise.
+Returns 0 if two folders or files passed as arguments have the same content, 1 otherwise.
 
 ---
 
