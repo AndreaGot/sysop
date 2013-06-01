@@ -23,17 +23,18 @@
 
 static FILE * log;
 
+// questa funzione si occupa di creare il log se non esiste, altrimenti lo apre
 int crealog(char * progname){
 
 
 	progname = basename(strdup(progname));
 	  if(log != NULL){
-       return 1;														//se il log esiste aprilo
+       return 1;					//se il log esiste aprilo
     }
 	int size = strlen(progname);
 	char * file_to_open = malloc(strlen(PATH) + size + 1);
-	strcpy(file_to_open, PATH);
-	strcat(file_to_open, progname);
+	strcpy(file_to_open, PATH); 			//qui viene aggiunta l'intestazione /var/log/utility
+	strcat(file_to_open, progname);			//qui viene aggiunto il nome progname
 
     FILE * temp = fopen(file_to_open, "r");
     if(temp == NULL)
@@ -45,7 +46,8 @@ int crealog(char * progname){
         fclose(temp);
     }
 
-	log = fopen(file_to_open, "a");
+	log = fopen(file_to_open, "a");// viene creato e aperto in modalità append()
+				// i privilegi sono di sudoer			
 	if (log == NULL)
 	{
 		return 1;
@@ -55,6 +57,8 @@ int crealog(char * progname){
 	return 0;
 }
 
+
+//si occupa di scrivere i log
 int scrivilog(char * format, ...){
     va_list arg_list;
     va_start(arg_list, format);

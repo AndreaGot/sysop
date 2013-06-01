@@ -50,8 +50,8 @@ int main(int argc, char * argv[])
 	crealog(argv[0]);
 	int i;
 	int opt = 0;
-	bool f = false;													// Setto tutte le variabili a false
-	bool c = false;													// mi serviranno per capire che funzione chiamare
+	bool f = false;							// Setto tutte le variabili a false
+	bool c = false;							// mi serviranno per capire che funzione chiamare
 	bool x = false;
 	bool t = false;
 while ( (i = getopt(argc, argv, "fcxt")) != -1)
@@ -104,8 +104,8 @@ while ( (i = getopt(argc, argv, "fcxt")) != -1)
 	
 
 	
-	globalargv = argv;														//salvo la lista dei parametri
-	globalargc = argc;														//e il numero di essi, mi serviranno poi
+	globalargv = argv;						//salvo la lista dei parametri
+	globalargc = argc;							//e il numero di essi, mi serviranno poi
 	
 	if(opt>2)
 	{

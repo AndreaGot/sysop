@@ -24,3 +24,4 @@ void scriviFile(const char * arrivo);
 int list(const char *name, const struct stat *status, int type);
 int listC(const char *name, const struct stat *status, int type);
 int listD(const char *name, const struct stat *status, int type);
+

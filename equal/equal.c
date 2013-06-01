@@ -118,11 +118,12 @@ int main( int argc, char *argv[])
 
     crealog(argv[0]);
     scrivilog("Inizia il programma, gli argomenti ricevuti sono %s e %s \n",argv[1],argv[2]);
+     atexit(chiudiprogramma);
   
    if ( argc != 3 ) /* argc should be 3 for correct execution */
 	    {
 	        scrivilog("Mancano i nomi dei percorsi da verificare \n");
-	        printf( "Manca almeno un argomento \n");
+	        printf( "Uso corretto: ./equal path1 path2 \n");
 		exit(0);
 	    }
 
@@ -133,7 +134,7 @@ int main( int argc, char *argv[])
 
    if (( esiste1 ==-1 ) && ( esiste2==-1))
 	{
-	printf("Entrambi i percorsi non esistono, verifica ed inserisci quelli corretti \n");
+	printf("Entrambi i percorsi non esistono, verifica i percorsi inseriti \n");
 	scrivilog("Entrambi i percorsi sono sbagliati \n");
 	exit(0);
 
@@ -163,7 +164,8 @@ int main( int argc, char *argv[])
 		scrivilog("Sono 2 file \n"); 
 		uguali = compareFile(argv[1],argv[2],&uguali);
 		if (uguali){
-			printf("true \n");
+			printf("0 \n");
+			scrivilog("Sono uguali \n 0");
 			}		
 		exit(0);
 
@@ -174,15 +176,15 @@ int main( int argc, char *argv[])
 	scrivilog("Controllo se gli elementi sono dello stesso tipo (cartella o file) \n");
 	if( (sonocartella1) && !(sonocartella2) )
 	{
-			printf("false \n");
-			scrivilog("false \nGli elementi sono di tipo diverso: %s è una cartella e %s è un file \n",argv[1],argv[2]);
+			printf("1 \n");
+			scrivilog("1 \nGli elementi sono di tipo diverso: %s è una cartella e %s è un file \n",argv[1],argv[2]);
 			exit(0);
 		
 	// ----------------- il primo è un file e il secondo è una cartella
 	}else if( !(sonocartella1) && (sonocartella2) )
 		{
-			printf("false \n");
-			scrivilog("false \nGli elementi sono di tipo diverso: %s è una file e %s è una cartella \n",argv[1],argv[2]);
+			printf("1 \n");
+			scrivilog("1 \nGli elementi sono di tipo diverso: %s è una file e %s è una cartella \n",argv[1],argv[2]);
 			exit(0);
 		}
 	
@@ -240,8 +242,6 @@ int main( int argc, char *argv[])
 
     //qui confronto i 2 array
     compareArray(percorsi,percorsi2,t,t2,first,second);
-
-	
        
 
     exit(0);
@@ -290,7 +290,7 @@ bool isDIR(char * folder){
 
 /*
 Questa funzione viene utilizzata per comparare le stringhe.
-E' particolarmente importante perchè è la funzione di comparazione che poi
+È la funzione di comparazione che poi
 viene data in input alla funzione q_sort
 */
 int comp(const void *x, const void *y)
@@ -357,8 +357,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 			if(primavolta) // se è la prima volta che trovo un elemento diverso scrivo false
 			{
 			primavolta = false;
-			scrivilog("Ho trovato il primo elemento che differisce \n");
-			printf("false \n");
+			scrivilog("1 \nHo trovato il primo elemento che differisce \n");
+			printf("1 \n");
 			}
 		
 
@@ -379,8 +379,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		if(primavolta) // se è la prima volta che trovo un elemento diverso scrivo false
 			{
 			primavolta = false;
-			scrivilog("Ho trovato il primo elemento che differisce \n");	
-			printf("false \n");
+			scrivilog("1 \n Ho trovato il primo elemento che differisce \n");	
+			printf("1 \n");
 			}
 		
 		
@@ -404,8 +404,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		if(primavolta) // se è la prima volta che trovo un elemento diverso scrivo false
 			{
 			primavolta = false;
-			scrivilog("Ho trovato il primo elemento che differisce \n");
-			printf("false \n");
+			scrivilog("1 \n Ho trovato il primo elemento che differisce \n");
+			printf("1 \n");
 			}
 
 		sonouguali = false;
@@ -427,8 +427,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		if(primavolta) // se è la prima volta che trovo un elemento diverso scrivo false
 			{
 			primavolta = false;
-			scrivilog("Ho trovato il primo elemento che differisce \n");
-			printf("false \n");
+			scrivilog("1 \n Ho trovato il primo elemento che differisce \n");
+			printf("1 \n");
 			}
 
 		sonouguali = false;
@@ -441,10 +441,10 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 
 
 	if(sonouguali){   //se non ho trovato neanche un elemento che differisce scrivo true
-		printf("true \n"); 
-		scrivilog("TRUE \n");
+		printf("0 \n"); 
+		scrivilog("0 \n");
 		}else{
-		scrivilog("FALSE \n");
+		scrivilog("1 \n");
 		}
 }
 
@@ -524,12 +524,12 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 	*/
 	if ( fileFST == NULL )
 	       {
-	       printf("false \n Il file %s non esiste ", primo );
+	       printf("1 \n Il file %s non esiste ", primo );
 	       return false;
 	       }
 	else if (fileSND == NULL)
 	       {
-	       	printf("false \n Il file %s non esiste ", secondo );
+	       	printf("1 \n Il file %s non esiste ", secondo );
 		return false;
 	
 
@@ -548,7 +548,7 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 			*primavolta = false;
 			scrivilog("Ho trovato il primo elemento che differisce \n");
 			numval++;
-			printf("false \nDifferisce al byte: 1");
+			printf("1 \nDifferisce al byte: 1");
 			printedfirst = true;
 			uguali = false;
 			}
@@ -572,9 +572,9 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 			*primavolta = false;
-			scrivilog("false \nHo trovato i primi elementi che differiscono: %s \n",primo);
+			scrivilog("1 \nHo trovato i primi elementi che differiscono: %s \n",primo);
 			scrivilog("Differiscono al byte:\n ",i); 
-			printf("false \n %s differiscono al byte: %d \n",primo,i);
+			printf("1 \n %s differiscono al byte: %d \n",primo,i);
 			printedfirst = true;
 			numval++;
 
@@ -619,8 +619,8 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 		*primavolta = false;
-		scrivilog("false\nHo trovato il primo elemento che differisce \n");
-		printf("false \n%s differiscono al byte: %d \n",primo,j);
+		scrivilog("1 \nHo trovato il primo elemento che differisce \n");
+		printf("1 \n %s differiscono al byte: %d \n",primo,j);
 		printedfirst = true;
 		}else{
 			//questo if mi serve affinchè mostri a display solo il primo byte diverso
@@ -654,8 +654,8 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 		*primavolta = false;
-		scrivilog("false \nHo trovato il primo elemento che differisce \n");
-		printf("false \n%s differiscono al byte: %d \n",primo,i);
+		scrivilog("1 \nHo trovato il primo elemento che differisce \n");
+		printf("1 \n %s differiscono al byte: %d \n",primo,i);
 		printedfirst = true;
 		}else{
 				
@@ -699,6 +699,12 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 }
 
+
+/*
+	Stampa a video o sul file di log le differenze fra due byte. Cioè le posizioni dei bit in cui differisce.
+	Le stampa a video se @s == 's', altrimenti viene stampato sul file di log
+
+*/
 void stampaBit(char a,char b,char s,int ind)
 {
 //questa parte serve a stampare sul file di log i bit in cui è diverso ogni byte
@@ -739,5 +745,11 @@ void stampaBit(char a,char b,char s,int ind)
 			else
 				scrivilog(")\t");
 		}	
+}
+
+/* questa funzione chiude il log */
+void chiudiprogramma(){
+	scrivilog("%s","Sono dentro alla funzione che chiude questo log\n");
+	chiudilog();
 }
 
