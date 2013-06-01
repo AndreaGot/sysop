@@ -5,3 +5,4 @@ char** scorripercorso(char* folder,int* n);
 int comp(const void *x, const void *y);
 void verificaLast(char** x, char* y, char* add);
 bool compareFile(char* primo, char* secondo, bool* primavolta);
+void stampaBit(char a,char b,char s,int ind);

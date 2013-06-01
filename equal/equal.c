@@ -502,6 +502,9 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 	FILE *fileFST;
 	FILE *fileSND;
 
+	int numval = 0;//questa variabile serve solo per tenere ordinato il file di log
+
+
 	bool printedfirst = false;//questa booleana la uso in modo da stampare solo il primo bit che differisce
 				//tutto il resto viene scritto nel file di log
 
@@ -528,23 +531,31 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 	       {
 	       	printf("false \n Il file %s non esiste ", secondo );
 		return false;
+	
+
+	// i file esistono
 	}else{
 
 
 	//ora inizio a confrontare i 2 file
        	char ch1  =  getc( fileFST ) ; //uso i char che equivalgono ad un byte
-        char ch2  =  getc( fileSND ) ;
+        char ch2  =  getc( fileSND ) ; //uso i char che equivalgono ad un byte
 		
 	if (ch1!=ch2){
 		uguali = false;
 
-	if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
-		*primavolta = false;
-		scrivilog("Ho trovato il primo elemento che differisce \n");
-		printf("false \nDifferisce al byte: 1 \n");
-		printedfirst = true;
-		uguali = false;
-		}
+		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
+			*primavolta = false;
+			scrivilog("Ho trovato il primo elemento che differisce \n");
+			numval++;
+			printf("false \nDifferisce al byte: 1");
+			printedfirst = true;
+			uguali = false;
+			}
+			
+		stampaBit(ch1,ch2,'s',numval);
+		stampaBit(ch1,ch2,'l',numval);
+		
 	}	
 
 	  int i = 1;//inizio a scorrere entrambi i file
@@ -562,9 +573,12 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 		if(*primavolta){ // se è la prima volta che trovo un elemento diverso scrivo false
 			*primavolta = false;
 			scrivilog("false \nHo trovato i primi elementi che differiscono: %s \n",primo);
-			scrivilog("Differiscono al byte:\n%d",i); 
-			printf("false \n%s differiscono al byte: %d \n",primo,i);
+			scrivilog("Differiscono al byte:\n ",i); 
+			printf("false \n %s differiscono al byte: %d \n",primo,i);
 			printedfirst = true;
+			numval++;
+
+			stampaBit(ch1,ch2,'s',numval);
 		}else{
 
 			//questo if mi serve affinchè mostri a display solo il primo byte diverso
@@ -572,14 +586,27 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 			//ma a schermo mostro solo le maggiori differenze
 			if (printedfirst==false)
 			{			
-			scrivilog("I file %s differiscono al byte:\n%d ",primo,i);
-			printf("%s differiscono al byte:\n",primo);
+			scrivilog("I file %s differiscono al byte:\n ",primo);	
+			numval++;
+			printf("%s differiscono al byte: ",primo);
+			printf("%d",i);
 			printedfirst = true;
+
+			
+
+			stampaBit(ch1,ch2,'s',numval);
 			}
 
-			scrivilog(" %d ",i);
-		}		
+		}
+
+		scrivilog(" %d",i);
+		numval++;
+		
+		stampaBit(ch1,ch2,'l',numval);
+	
              }
+
+		
         }
 
 	//nel caso un file sia più piccolo dell'altro continuo a scrivere le differenze
@@ -599,15 +626,20 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 			//questo if mi serve affinchè mostri a display solo il primo byte diverso
 			//invece nel file di log li scrivo tutto, in modo che lì sarà visibile tutte le differenze fra i 2 file
 			//ma a schermo mostro solo le maggiori differenze
-
 			if (printedfirst==false)
 			{	
-			scrivilog("I file %s differiscono al byte:\n%d ",primo,j);
-			printf("I file %s differiscono al byte: %d \n",primo,j);
+			scrivilog("I file %s differiscono al byte:\n ",primo);
+			printf("I file %s differiscono al byte: %d(bit: all) \n",primo,j);
 			printedfirst = true;
 			}
 
-			scrivilog(" %d ",j);
+			//questa parte serve solo a tenere il file di log ordinato
+			scrivilog(" %d(bit: all)",j);//stampo all perchè l'intero byte non è presente nell'altro elemento
+			numval++;
+			if(numval%4==0)
+				scrivilog("\n");
+			else
+				scrivilog("\t");
 		}
 
 	}
@@ -615,7 +647,7 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 	//nel caso un file sia più piccolo dell'altro continuo a scrivere le differenze
 	while( (ch2!=EOF) )
 	{
-		ch2 = getc(fileFST);
+		ch2 = getc(fileSND);
 		i++;
 		
 		uguali = false;
@@ -632,21 +664,29 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 			//ma a schermo mostro solo le maggiori differenze
 			if (printedfirst==false)
 			{	
-			scrivilog("I file %s differiscono al byte:\n%d ",primo,i);
-			printf("%s differiscono al byte: %d \n",primo,i);
+			scrivilog("I file %s differiscono al byte:\n ",primo);
+			printf("%s differiscono al byte: %d(bit: all) \n",primo,i);
 			printedfirst = true;
 			}
-			scrivilog(" %d ",i);
+
+			//questa parte serve solo per tenere il file di log ordinato
+			scrivilog(" %d(bit: all)",i);//stampo all perchè l'intero byte non è presente
+			numval++;
+			if(numval%4==0)
+				scrivilog("\n");
+			else
+				scrivilog("\t");
+			//qui finisce 
 		}
 
 	}
 
 
         if (uguali){
-	    scrivilog("\nI file sono uguali \n");
+	    scrivilog("I file sono uguali \n\n");
             return true;
 	}else{
-		scrivilog("\nHo finito di scorrere i 2 file %s, sono diversi \n");
+		scrivilog("Ho finito di scorrere i 2 file %s, sono diversi \n\n");
 		return false;
 	}
 
@@ -659,4 +699,45 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 }
 
+void stampaBit(char a,char b,char s,int ind)
+{
+//questa parte serve a stampare sul file di log i bit in cui è diverso ogni byte
+		int ibit = 0;
+		bool retval;
+
+		if (s == 's')
+			printf("(al bit:");
+		else
+			scrivilog("(al bit:");
+
+		while(ibit<8){
+			retval=!( (a & 1) ^ ( b & 1) );
+			
+			if ( retval == false)	
+			{	
+				if(s == 's')
+					printf(" %d",ibit);
+				else
+					scrivilog(" %d",ibit);
+			}
+
+		
+			a=a>>1;
+			b=b>>1;
+			ibit++;
+		}
+		//qui finisce
+
+		//questa parte la utilizzo per tenere ordinato il file di log
+
+		if(s == 's')	{	
+			printf(") \n");
+		}else{
+				
+			if(ind%4==0)
+				scrivilog(") \n");
+			else
+				scrivilog(")\t");
+		}	
+}
 
