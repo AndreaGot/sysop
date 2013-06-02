@@ -4,7 +4,7 @@
  Project Name  : Progetto 1: Modifica utility di base di GNU/Linux
  Authors       : Giuliano Tortoreto (152183) and Andrea Gottardi (151955)
  Name          : equal.c
- Description   : Ritorna true se gli oggetti passati come parametro sono uguali, false altrimenti 
+ Description   : Ritorna 0 se gli oggetti passati come parametro sono uguali, 1 altrimenti 
  ============================================================================
  */
 
@@ -90,9 +90,8 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 		*percorsi =  realloc((*percorsi),sizeof(char**) * (*n));
 		}
 	    
-	   //printf("%s \n",(*percorsi)[(*i)-1]);
-            /* Recurse at a new indent level */
-
+            
+	//se trovo una cartella, ci entro e scorro tutti gli elementi
 	    if (isDIR(new_folder1)){
 		
             savedir(new_folder1,percorsi,i,n,radice);
@@ -111,7 +110,7 @@ void savedir(char *folder1, char*** percorsi,int* i,int* n,char* radice)
 //qui inizia il programma
 int main( int argc, char *argv[])
 {
-  //  int differenzaFraFile = 0;
+  
     bool uguali = true;
     char ** percorsi; 
     char ** percorsi2;
@@ -120,14 +119,14 @@ int main( int argc, char *argv[])
     scrivilog("Inizia il programma, gli argomenti ricevuti sono %s e %s \n",argv[1],argv[2]);
      atexit(chiudiprogramma);
   
-   if ( argc != 3 ) /* argc should be 3 for correct execution */
+   if ( argc != 3 ) /* deve essere 3 affinchè esegua correttamente */
 	    {
 	        scrivilog("Mancano i nomi dei percorsi da verificare \n");
 	        printf( "Uso corretto: ./equal path1 path2 \n");
 		exit(0);
 	    }
 
-   scrivilog("Controllo se i percorsi esistono \n");
+   scrivilog("Controllo se i percorsi esistono \n");	
    //controllo se i percorsi esistono
    int esiste1 = access(argv[1],F_OK);
    int esiste2 = access(argv[2],F_OK);
@@ -390,9 +389,8 @@ void compareArray(char** first, char** second,int fLun,int sLun,char* fHead, cha
 		j++;
 	
 
-		//prima di mettere a video un'elemento che differisce,
- 		//controllo che non sia la sottocartella di un elemento che abbiamo già stampato sul dispay
-		//così evito di scrivere tutti i sottopercorsi diversi
+		/* questo controllo serve ad evitare di scrivere tutti i sottopercorsi
+		 in caso ci siano cartelle diverse*/		
 		verificaLast(&ultimodiverso,second[j-1]," >>>>");
 		}
 
@@ -474,7 +472,8 @@ void verificaLast(char** x, char* y,char* add)
 	}
 	else
  	{
-		if ( strncmp(y,(*x) , strlen( (*x) ) ) != 0){
+		// controllo se la prima parte è identica
+		if ( strncmp(y,(*x) , strlen( (*x) ) ) != 0){ 
 
 			free(*x);
 			(*x) = malloc(sizeof(char*) * sizeof(y));
@@ -704,7 +703,7 @@ bool compareFile(char* primo, char* secondo, bool* primavolta){
 
 
 /*
-	Stampa a video o sul file di log le differenze fra due byte. Cioè le posizioni dei bit in cui differisce.
+	Stampa a video o sul file di log le differenze fra due byte. Cioè le posizioni dei bit in cui differiscono i due byte
 	Le stampa a video se @s == 's', altrimenti viene stampato sul file di log
 
 */
